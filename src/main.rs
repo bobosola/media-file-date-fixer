@@ -1,32 +1,57 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
-#![allow(rustdoc::missing_crate_level_docs)] // it's an example
+use std::fs::File;
+use std::io::BufReader;
+use mp4::creation_time;
+use std::time::{ UNIX_EPOCH, Duration };
+use std::fs::FileTimes;
+use walkdir::{DirEntry, WalkDir};
+use anyhow::Result;
 
-use eframe::egui;
+fn main() -> Result<()> {
 
-fn main() -> eframe::Result {
+    let dir_path = "/home/bob/Videos/test1";
 
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
-        ..Default::default()
-    };
+    for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
 
-    // Our application state:
-    let mut name = "Arthur".to_owned();
-    let mut age = 42;
+        if !is_mp4(&entry) {
+            continue;
+        }
 
-    eframe::run_simple_native("My egui App", options, move |ctx, _frame| {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("My egui Application");
-            ui.horizontal(|ui| {
-                let name_label = ui.label("Your name: ");
-                ui.text_edit_singleline(&mut name)
-                    .labelled_by(name_label.id);
-            });
-            ui.add(egui::Slider::new(&mut age, 0..=120).text("age"));
-            if ui.button("Increment").clicked() {
-                age += 1;
-            }
-            ui.label(format!("Hello '{name}', age {age}"));
-        });
-    })
+        let path = entry.path();
+
+        // Get MP4 metadata
+        let file = File::open(path)?;
+        let filesize = file.metadata()?.len();
+        let reader = BufReader::new(file);
+        let mp4 = mp4::Mp4Reader::read_header(reader, filesize)?;
+
+        // Get MP4 creation datetime (a Unix timestamp) from metadata
+        // and convert to SystemTime
+        let ts = creation_time(mp4.moov.mvhd.creation_time);
+        let created_date = UNIX_EPOCH + Duration::from_secs(ts);
+
+        // Prepare the date to be used on a file
+        let filetimes = FileTimes::new().set_modified(created_date);
+
+        // Change the 'file modified' date to the metadata creation date
+        let file_to_amend = File::options().write(true).open(path)?;
+        file_to_amend.set_times(filetimes)?;
+        println!("Converted: {}", path.display());
+    }
+
+    fn is_mp4(entry: &DirEntry) -> bool {
+
+        let filename = match entry.file_name().to_str() {
+            Some(name) => name,
+            None => return false
+        };
+
+        if entry.file_type().is_file() && 
+           filename.to_lowercase().ends_with("mp4") && 
+           !filename.starts_with(".") {
+            return true
+        }
+        false
+    }
+
+    Ok(())
 }

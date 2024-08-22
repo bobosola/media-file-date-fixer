@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-egui = "0.28.1"
-eframe = "0.28.1"
+anyhow = "1.0.86"
+mp4 = "0.14.0"
+walkdir = "2.5.0"
