@@ -1,100 +1,93 @@
-use std::fs::File;
-use std::time::{SystemTime, UNIX_EPOCH};
-use std::path::Path;
-use std::fs::FileTimes;
-use walkdir::{DirEntry, WalkDir};
-use anyhow::{ anyhow, Context, Result };
-use file_format::FileFormat;
+use std::fs:: {File, FileTimes};
+use std::time:: SystemTime;
+use walkdir::{ WalkDir, DirEntry };
 use nom_exif::*;
-use nom_exif::ExifTag::*;
-use chrono::{ DateTime, Tz };
+use std::path::Path;
+use chrono::{ DateTime, FixedOffset };
 
-fn main() -> Result<()> {
-
-    let dir_path = "/home/bob/Videos/test1";
-
-    for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
-
-        let file_path = entry.path();
-        let file_format = FileFormat::from_file(file_path).context("Could not determine file format")?;
-        match parse_file(file_format, file_path) {
-            Ok(systime) => amend_file_date(systime, file_path),
-            _ => ()
-        };
-
-    }
-    Ok(())
+fn main() -> () {
+    let dir_path = "/Users/bobosola/Movies/test_videos/test1";
+    match fixdates(dir_path) {
+        Ok(filecounter) => println!("Finished. Processed {:?} files.", filecounter),
+        Err(e) => eprintln!("{:?}", e)
+    };
 }
 
-    fn parse_file(file_format: FileFormat, file_path: &Path) -> Result<SystemTime> {
+fn fixdates(dir_path: &str) -> Result<i32> {
 
-        match file_format {
-            // .jpg image file
-            FileFormat::JointPhotographicExpertsGroup => {
-                let f = File::open(file_path)?;
-                match parse_jpeg_exif(f)? {
-                    Some(exif) => {
-                        return get_creation_date_from_exif(exif)
-                    },
-                    _ => ()
-                }            
-            },
-            // .heic or .heif image file
-            FileFormat::HighEfficiencyImageCoding | FileFormat::HighEfficiencyImageFileFormat=> {
-                let f = File::open(file_path)?;
-                match parse_heif_exif(f)? {
-                    Some(exif) => {
-                        return get_creation_date_from_exif(exif)
-                    },
-                    _ => ()
-                }            
-            },            
-            _ => ()
+    let mut filecounter = 0;
+    let mut parser = MediaParser::new();
+
+    // Filter out any hidden or or error condition files and directories (e.g. insufficient perms)
+    for entry in WalkDir::new(dir_path).into_iter().filter_entry(|e| !is_hidden(e)).filter_map(|e| e.ok()) {
+
+        // Only process file types
+        if let Ok(metadata) = entry.metadata() {
+            if metadata.is_file() {
+                filecounter += 1;
+                let file_path = entry.path();
+
+                // Try to get media data from the file
+                let ms = MediaSource::file_path(file_path)?;
+
+                if ms.has_exif() {
+                    let iter: ExifIter = parser.parse(ms)?;
+                    let exif: Exif = iter.into();
+                    if let Some(entry_val) = exif.get(ExifTag::CreateDate) {
+                        match entry_val.as_time() {
+                            Some(datetime) => {
+                                println!("CreateDate tag {:?} for {:?}", datetime, file_path);
+                                match update_file(datetime, file_path){
+                                    Ok(_) => (),
+                                    Err(e) => eprintln!("{:?}", e)
+                                }
+                            },
+                            None => eprintln!("No CreateDate tag found in EXIF data for {:?}", file_path)
+                         }
+                    }
+                    else {
+                        println!("Could not get entry value for {}", entry.path().display());
+                    }
+                } else if ms.has_track() {
+
+                    let info: TrackInfo = parser.parse(ms)?;
+                    if let Some(datetime) = info.get(TrackInfoTag::CreateDate) {
+                        match datetime.as_time() {
+                            Some(datetime) => {
+                                println!("CreateDate info {:?} for {:?}", datetime, file_path);
+                                match update_file(datetime, file_path){
+                                    Ok(_) => (),
+                                    Err(e) => eprintln!("{:?}", e)
+                                }
+                            },
+                            None => eprintln!("No CreateDate info found for {:?}", file_path)
+                        }
+                    }
+                }
+            }
         }
-        Err(anyhow!("File format {:?}", file_path))
-    }
-
-    fn get_exif (fmt: FileFormat, file_path: &Path) -> Result<Option<Exif>> {
-
-        let f = File::open(file_path).with_context(|| format!("Could not open file {:?}", file_path))?;
-
-        let exif = match fmt {
-            FileFormat::JointPhotographicExpertsGroup => {
-                match parse_jpeg_exif(f) {
-                    Ok(ex) => ex,
-                    _ => None
-                } 
-            },
-            FileFormat::HighEfficiencyImageCoding | FileFormat::HighEfficiencyImageFileFormat => {
-                match parse_heif_exif(f) {
-                    Ok(ex) => ex,
-                    _ => None
-                } 
-            },
-           _ => None
-        };
-        Ok(exif)
-    }
-
-    fn get_creation_date_from_exif(exif: Exif) -> Result<SystemTime> {
-
-        match exif.get_value(&CreateDate)? {
-            Some(val) => {
-                let dt = DateTime::parse_from_rfc3339(&val.to_string()).context("Non-standard EXIF date format")?;
-                Ok(SystemTime::from(dt))      
-            },
-            None => Err(anyhow!("EXIF data does not contain a created date"))
+        else {
+            eprintln!("No file metadata for {}", entry.path().display());
         }
     }
+    Ok(filecounter)
+}
 
-    fn amend_file_date(dt: SystemTime, file_path: &Path) -> anyhow::Result<()> {
+fn is_hidden(entry: &DirEntry) -> bool {
+    entry.file_name()
+         .to_str()
+         .map(|s| s.starts_with("."))
+         .unwrap_or(false)
+}
 
-        // Prepare the date to be used on the file
-        let filetimes = FileTimes::new().set_modified(dt);
+fn update_file(datetime: DateTime<FixedOffset>, filepath: &Path ) -> Result<()> {
 
-        // Change the 'file modified' date to the found metadata date
-        let file_to_amend = File::options().write(true).open(file_path)?;
-        file_to_amend.set_times(filetimes)?;
-        println!("Converted: {}", file_path.display());
-        Ok(())
-    }
+    // Prepare the updated timestamps to be used on the file
+    // using the created datetime obtained from the file
+    let filetimes = FileTimes::new().set_modified(SystemTime::from(datetime));
+
+    // Change the 'file modified' date to the updated timestamps
+    let file_to_amend = File::options().write(true).open(filepath)?;
+    file_to_amend.set_times(filetimes)?;
+    Ok(())
+}
