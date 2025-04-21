@@ -7,7 +7,7 @@ This application and library fixes that problem for the media formats listed bel
 - scanning a user-chosen parent directory (and all sub-directories)
 - reading the metadata contained within each supported file type
 - copying the original Created and Modified dates from the metadata
-- updating the OS inode dates (or Windows MFT dates) with the metadata dates to to effectively recreate the original file dates as seen in a directory listing or file explorer.
+- updating the OS inode dates (or Windows MFT dates) with the metadata dates to effectively recreate the original file dates as seen in a directory listing or file explorer.
 
 This enables a mix of media files with different naming conventions to be ordered chronologically for sequential viewing or editing.
 
