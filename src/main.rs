@@ -10,7 +10,7 @@ fn main() -> () {
     if args.len() == 1 {
         println!("Media File Date Fixer (mfdf)");
         println!("Please provide a parent directory path containing media files");
-        println!("Usage: ./mfdf \"/Users/bob/media files\"");
+        println!("Usage: ./mfdf ~/holiday/media");
         exit(0);
     }
     let dir_path = &args[1];
