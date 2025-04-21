@@ -1,5 +1,25 @@
-# mp4datecorrector
+# Media File Date Fixer
 
-A common problem when copying MP4 files across devices is that one or both devices may clobber the "file modified" date and time of the copied file so that it becomes the date and time when the copy operation was done. This results in the natural shooting date order of the files being lost. This is very annoying should you wish to order your MP4 files by shooting date when editing in a NLE.
+A common problem when copying media files from SD cards to a computer is that the original file Created and Modified dates can be overridden. This happens because the copy operation often ignores the original dates, and instead inserts the date and time when the copy operation was performed. This results in all the files showing the same date and time.
 
-This application fixes the problem by amending the "file modified" date of all the MP4 files in a user-selected directory tree so that they match the "video encoded" date found inside the file's video metdata. This then enables the files to ordered by the original "file modfied" date in an NLE.
+This application fixes the problem for the media formats listed below by:
+
+- reading the metadata contained within each file in a given directory (and any sub-directories)
+- using the Created and Modified dates found within the file metadata to recreate the original file Created and Modified dates.
+
+Thus a mix of media file types with different file naming conventions can then be ordered chronologically for sequential viewing or editing.
+
+This repo uses [nom-exif](https://github.com/mindeng/nom-exif) for the file parsing, so file types supported here are the same as the file types supported by that crate, which are currently:
+
+- Image
+  - *.heic, *.heif, etc.
+  - *.jpg, *.jpeg
+  - *.tiff, *.tif
+  - *.RAF (Fujifilm RAW)
+- Video/Audio
+  - ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp, etc.
+  - Matroska based file format: *.webm, *.mkv, *.mka, etc.
+
+Unsupported file types are ignored.
+
+If a supported file type cannot be corrected because of some error condition (e.g. because the EXIF or other metadata data is missing), then the error and file name will listed in the output report.
