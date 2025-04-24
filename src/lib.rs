@@ -71,7 +71,7 @@ pub fn fix_dates<'a>(dir_path: &str, report: &'a mut Report) -> &'a Report {
                         }
                         else if metadata.is_file() {
                             // Check the file for image or video metadata
-                            // and try to update the timestamsp
+                            // and try to update the timestamps
                             match parse_file(entry.path(), &rel_path.as_str(), parser){
                                 Ok(_) => report.updated +=1,
                                 Err(e) => {
