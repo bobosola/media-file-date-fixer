@@ -2,7 +2,7 @@
 
 A common problem when copying media files from SD cards is that the original Created and Modified dates can be overridden on the copied files. This happens because copy operations often insert the date and time when the copy operation was performed, usually resulting in all the copied files showing the same date and time.
 
-This repo fixes that problem for the file formats listed below by recursively scanning a directory and using any found file metadata timestamps (EXIF data etc.) to correct the copied file dates. The Created and Modified dates can usually be retrieved for image files, but only a Created date is retrievable for video and audio file formats.
+This repo fixes that problem for the file formats listed below by recursively scanning a directory and using any found file metadata timestamps (EXIF data etc.) to correct the copied file dates. The Created and Modified dates can usually be retrieved for image files, but only a Created date is retrievable for video and audio file formats. Thus a mix of media file types can then be ordered by the Created date for sequential viewing or editing.
 
 Note that file metadata can be missing for several reasons, e.g. if the file was retrieved from an online service that strips EXIF data. So the code works best with media files copied directly from a camera.
 
