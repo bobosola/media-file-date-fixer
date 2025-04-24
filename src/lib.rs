@@ -50,8 +50,8 @@ struct ErrorMsg {
 impl Default for ErrorMsg {
     fn default() -> Self {
         return ErrorMsg {
-            no_create: String::from("No Create date in EXIF metadata in {}"),
-            no_modify: String::from("No Modify date in EXIF metadata in {}"),
+            no_create: String::from("No Create date in Exif metadata in {}"),
+            no_modify: String::from("No Modify date in Exif metadata in {}"),
             bad_create: String::from("Could not convert Create tag to datetime in {}"),
             bad_modify: String::from("Could not convert Modify tag to datetime in {}"),
             no_metadata: String::from("No media metadata found in {}"),
@@ -62,7 +62,7 @@ impl Default for ErrorMsg {
 }
 
 /// Attempts to fix various media file dates by reading dates from file metadata
-/// (EXIF etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
+/// (Exif etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
 pub fn fix_dates<'a>(dir_path: &str) -> Report {
 
     let mut report = Report::default();
@@ -120,7 +120,7 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
     report
 }
 
-/// Parses a file to determine if it has suitable metadata (EXIF etc.)
+/// Parses a file to determine if it has suitable metadata (Exif etc.)
 /// and uses the found data to update the file timestamps
 fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> Result<()> {
 
@@ -130,7 +130,7 @@ fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) ->
     let ms = MediaSource::file_path(file_path)?;
     if ms.has_exif() {
 
-        // Images files in various formats with EXIF data
+        // Images files in various formats with Exif data
         let iter: ExifIter = parser.parse(ms)?;
         let exif: Exif = iter.into();
 

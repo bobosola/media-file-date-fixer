@@ -8,10 +8,10 @@ fn main() -> () {
     let len = args.len();
     if len == 1 || (len > 1 && ["help", "--help", "-h"].iter().any(|&h| h == args[1])) {
         print!("\n \
-            -- Media File Date Fixer (mfdf) --\n \
-            Recreates the original 'Created' and 'Modified' dates for common video\n \
-            or image files which get overwritten when copied from a recording device.\n \
-            Requires a directory containing media files.\n \
+            -------------- Media File Date Fixer (mfdf) --------------\n \
+            Recreates the original 'Created' date for copied video and image files.\n \
+            Modified dates are also recreated for copied image files.\n\n \
+            Requires a directory path as the single argument.\n \
             Example usage: ./mfdf ~/Desktop/copiedfiles\n \
         \n");
         exit(0);
