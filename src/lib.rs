@@ -45,7 +45,7 @@ struct ErrorMsg {
     bad_modify: String,
     no_metadata: String,
     with_path: String,
-    no_path: String
+    no_path: String,
 }
 impl Default for ErrorMsg {
     fn default() -> Self {
@@ -56,7 +56,7 @@ impl Default for ErrorMsg {
             bad_modify: String::from("Could not convert Modify tag to datetime in {}"),
             no_metadata: String::from("No media metadata found in {}"),
             with_path: String::from("{} in {}"),
-            no_path: String::from("{}"),
+            no_path: String::from("{}")
         }
     }
 }
@@ -70,17 +70,13 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
     let parser = &mut MediaParser::new();
 
     // Recursively search the directory, filter out any Unix hidden files
-    for entry in WalkDir::new(dir_path)
-        .into_iter()
-        .filter_entry(|e| !is_hidden(e)) {
-
+    for entry in WalkDir::new(dir_path).into_iter().filter_entry(|e| !is_hidden(e)) {
         match entry {
             Ok(entry) => {
 
                 // Get the file path relative to the parent dir
                 let rel_path = get_relative_path(dir_path, &entry).display().to_string();
 
-                // Only process file types
                 match entry.metadata() {
                     Ok(metadata) => {
                         // Ignore directory entries
@@ -96,7 +92,7 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
                                 Err(e) => {
                                     // nom_exif errors
                                     report.failed += 1;
-                                    report.errors.push(formatx!(&err_msg.with_path, e, rel_path).unwrap());
+                                    report.errors.push(get_msg(formatx!(&err_msg.with_path, e, rel_path)));
                                 }
                             }
                         }
@@ -105,78 +101,80 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
                         // WalkDir file metadata custom errors for path values that the program does not have
                         // permissions to access or if the path does not exist
                         report.failed += 1;
-                        report.errors.push(formatx!(&err_msg.with_path, e, rel_path).unwrap());
+                        report.errors.push(get_msg(formatx!(&err_msg.with_path, e, rel_path)));
                     }
                 }
                 report.examined += 1;
             },
             Err(e) => {
-               // WalkDir top level custom IO errors
+               // WalkDir iteration errors
                 report.failed += 1;
-                report.errors.push(formatx!(&err_msg.no_path, e).unwrap());
+                report.errors.push(get_msg(formatx!(&err_msg.no_path, e)));
             }
         }
     }
     report
 }
 
-/// Parses a file to determine if it has suitable metadata (Exif etc.)
-/// and uses the found data to update the file timestamps
+/// Parses a file to determine if it has suitable metadata
+/// and uses the found metadata to update the file timestamps
 fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> Result<()> {
 
     let mut timestamps = TimeStamps::default();
     let err_msg = ErrorMsg::default();
-
     let ms = MediaSource::file_path(file_path)?;
-    if ms.has_exif() {
 
+    if ms.has_exif() {
         // Images files in various formats with Exif data
         let iter: ExifIter = parser.parse(ms)?;
         let exif: Exif = iter.into();
 
-        // Try to get the Created date tag from EXIF
-        let entry_val = exif.get(ExifTag::CreateDate)
-            .ok_or_else(|| formatx!(&err_msg.no_create, rel_path).unwrap())?;
+        // Try to get the Created date tag
+        let exif_tag = exif.get(ExifTag::CreateDate)
+            .ok_or_else(|| get_msg(formatx!(&err_msg.no_create, rel_path)))?;
+
         // If found, try to convert the tag to a datetime
-        let datetime = entry_val.as_time()
-            .ok_or_else(|| formatx!(&err_msg.bad_create, rel_path).unwrap())?;
+        let datetime = exif_tag.as_time()
+            .ok_or_else(|| get_msg(formatx!(&err_msg.bad_create, rel_path)))?;
+
         // Store the datetime obtained
         timestamps.created = Some(datetime);
 
         // Same process for Modified date
-        let entry_val = exif.get(ExifTag::ModifyDate)
-            .ok_or_else(|| formatx!(&err_msg.no_modify, rel_path).unwrap())?;
-        let datetime = entry_val.as_time()
-            .ok_or_else(|| formatx!(&err_msg.bad_modify, rel_path).unwrap())?;
+        let exif_tag = exif.get(ExifTag::ModifyDate)
+            .ok_or_else(|| get_msg(formatx!(&err_msg.no_modify, rel_path)))?;
+        let datetime = exif_tag.as_time()
+            .ok_or_else(|| get_msg(formatx!(&err_msg.bad_modify, rel_path)))?;
         timestamps.modified = Some(datetime);
+
     }
     else if ms.has_track() {
 
         // Video files in various formats
         let info: TrackInfo = parser.parse(ms)?;
 
-        // Same process for video files
-        // but only the Created date is available in TrackInfo
-        let trackinfo_tag = info.get(TrackInfoTag::CreateDate)
-            .ok_or_else(|| formatx!(&err_msg.no_create, rel_path).unwrap())?;
-        let datetime =  trackinfo_tag.as_time()
-            .ok_or_else(|| formatx!(&err_msg.bad_create, rel_path).unwrap())?;
+        // Same process for video files, but only the Created date
+        // is available in TrackInfo
+        let track_tag = info.get(TrackInfoTag::CreateDate)
+            .ok_or_else(|| get_msg(formatx!(&err_msg.no_create, rel_path)))?;
+        let datetime = track_tag.as_time()
+            .ok_or_else(|| get_msg(formatx!(&err_msg.bad_create, rel_path)))?;
         timestamps.created = Some(datetime);
     }
     else {
         // Catch-all
-        return Err(formatx!(&err_msg.no_metadata, rel_path).unwrap().into());
+        return Err(get_msg(formatx!(&err_msg.no_metadata, rel_path)).into());
     }
 
     // Try to update the file with the found timestamp(s)
     let file_to_amend = File::options().write(true).open(file_path)?;
 
-    // Update the Created date
+    // Update the Created date (if we have one)
     if let Some(created_date) = timestamps.created {
         let new_create_date = FileTimes::new().set_created(SystemTime::from(created_date));
         file_to_amend.set_times(new_create_date)?;
     }
-    // Update the Modified date
+    // Update the Modified date (if we have one)
     if let Some(modified_date) = timestamps.modified {
         let new_mod_date = FileTimes::new().set_modified(SystemTime::from(modified_date));
         file_to_amend.set_times(new_mod_date)?;
@@ -200,5 +198,13 @@ fn get_relative_path(dir_path: &str, entry: &DirEntry) -> PathBuf {
     match diff_paths(&full_file_path, PathBuf::from(dir_path)) {
         Some(short_path) => short_path,
         None => full_file_path
+    }
+}
+
+/// Utility to avoid panics using formatx!().unwrap()
+fn get_msg(res: std::result::Result<String, formatx::Error>) -> String {
+    match res {
+        Ok(msg) => msg,
+        Err(e) => format!("Formatx error {}", e )
     }
 }
