@@ -1,8 +1,8 @@
 use std::process:: exit;
 use std::env;
-use media_file_date_corrector::{fix_dates, Report};
+use media_file_date_corrector:: fix_dates;
 
-// A CLI runner for the media_file_date_corrector library
+// Simple runner for the media_file_date_corrector library
 fn main() -> () {
 
     // Get a directory path as the single argument
@@ -14,18 +14,16 @@ fn main() -> () {
         exit(0);
     }
     let dir_path = &args[1];
-
-    let report = &mut Report::default();
-    let results = fix_dates(dir_path, report);
+    let report = fix_dates(dir_path);
 
     println!("\nmfdf report for files in {}:\n", dir_path);
-    println!("examined: {}", results.examined);
-    println!("updated:  {}", results.updated);
-    println!("errors:   {}\n", results.failed);
-    if !results.errors.is_empty() {
+    println!("examined: {}", report.examined);
+    println!("updated:  {}", report.updated);
+    println!("errors:   {}\n", report.failed);
+    if !report.errors.is_empty() {
         println!("error details:");
-        for str_error_msg in &results.errors {
-            println!("{}", str_error_msg);
+        for error_msg in &report.errors {
+            println!("{}", error_msg);
         }
     }
 }

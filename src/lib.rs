@@ -29,6 +29,14 @@ struct TimeStamps {
     created: Option<DateTime<FixedOffset>>,
     modified: Option<DateTime<FixedOffset>>
 }
+impl Default for TimeStamps {
+    fn default() -> Self {
+        return TimeStamps {
+            created: None,
+            modified: None
+        }
+    }
+}
 
 struct ErrorMsg {
     no_create: String,
@@ -55,10 +63,11 @@ impl Default for ErrorMsg {
 
 /// Attempts to fix various media file dates by reading dates from file metadata
 /// (EXIF etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
-pub fn fix_dates<'a>(dir_path: &str, report: &'a mut Report) -> &'a Report {
+pub fn fix_dates<'a>(dir_path: &str) -> Report {
 
-    let parser = &mut MediaParser::new();
+    let mut report = Report::default();
     let err_msg = ErrorMsg::default();
+    let parser = &mut MediaParser::new();
 
     // Recusively search the directory, filter out any Unix hidden files
     for entry in WalkDir::new(dir_path)
@@ -68,14 +77,14 @@ pub fn fix_dates<'a>(dir_path: &str, report: &'a mut Report) -> &'a Report {
         match entry {
             Ok(entry) => {
 
-                // Get the file path relative to the parent dir to shorten any error messages
+                // Get the file path relative to the parent dir
                 let rel_path = get_relative_path(dir_path, &entry).display().to_string();
 
                 // Only process file types
                 match entry.metadata() {
                     Ok(metadata) => {
-                        // Ignore directory name entries
-                        // NB: symlinks are ignored by default
+                        // Ignore directory entries
+                        // (symlinks are ignored by default)
                         if metadata.is_dir() {
                             report.examined -= 1
                         }
@@ -100,7 +109,6 @@ pub fn fix_dates<'a>(dir_path: &str, report: &'a mut Report) -> &'a Report {
                     }
                 }
                 report.examined += 1;
-
             },
             Err(e) => {
                // WalkDir top level custom IO errors
@@ -115,11 +123,7 @@ pub fn fix_dates<'a>(dir_path: &str, report: &'a mut Report) -> &'a Report {
 /// Parses a file to determine if it has suitable metadata (EXIF etc.)
 fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> Result<()> {
 
-    let mut timestamps = TimeStamps {
-        created: None,
-        modified: None
-    };
-
+    let mut timestamps = TimeStamps::default();
     let err_msg = ErrorMsg::default();
 
     let ms = MediaSource::file_path(file_path)?;
@@ -132,11 +136,9 @@ fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) ->
         // Try to get the Created date tag from EXIF
         let entry_val = exif.get(ExifTag::CreateDate)
             .ok_or_else(|| formatx!(&err_msg.no_create, rel_path).unwrap())?;
-
         // If found, try to convert the tag to a datetime
         let datetime = entry_val.as_time()
             .ok_or_else(|| formatx!(&err_msg.bad_create, rel_path).unwrap())?;
-
         // Store the datetime obtained
         timestamps.created = Some(datetime);
 
