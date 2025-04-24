@@ -15,20 +15,13 @@ fn main() -> () {
     }
     let dir_path = &args[1];
 
-    // Prepare an empty output report
-    let report = &mut Report {
-        examined: 0,
-        updated: 0,
-        failed: 0,
-        errors: vec![]
-    };
-
+    let report = &mut Report::default();
     let results = fix_dates(dir_path, report);
 
     println!("\nmfdf report for files in {}:\n", dir_path);
-    println!("examined:    {}", results.examined);
-    println!("updated:     {}", results.updated);
-    println!("errors:      {}\n", results.failed);
+    println!("examined: {}", results.examined);
+    println!("updated:  {}", results.updated);
+    println!("errors:   {}\n", results.failed);
     if !results.errors.is_empty() {
         println!("error details:");
         for str_error_msg in &results.errors {

@@ -14,6 +14,16 @@ pub struct Report {
     pub failed: i32,
     pub errors: Vec<String>
 }
+impl Default for Report {
+    fn default() -> Self {
+        return Report {
+            examined: 0,
+            updated: 0,
+            failed: 0,
+            errors: vec![]
+        }
+    }
+}
 
 struct TimeStamps {
     created: Option<DateTime<FixedOffset>>,
@@ -37,7 +47,7 @@ impl Default for ErrorMsg {
             bad_create: String::from("Could not convert Create tag to datetime in {}"),
             bad_modify: String::from("Could not convert Modify tag to datetime in {}"),
             no_metadata: String::from("No media metadata found in {}"),
-            with_path: String::from("{} {}"),
+            with_path: String::from("{} in {}"),
             no_path: String::from("{}"),
         }
     }
