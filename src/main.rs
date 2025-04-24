@@ -1,27 +1,33 @@
-use std::process:: exit;
-use std::env;
+
+use std::{ env, process::exit };
 use media_file_date_corrector:: fix_dates;
 
 // Simple runner for the media_file_date_corrector library
 fn main() -> () {
-
-    // Get a directory path as the single argument
     let args: Vec<String> = env::args().collect();
-    if args.len() == 1 {
-        println!("\nMedia File Date Fixer (mfdf)");
-        println!("Please provide a parent directory path containing media files");
-        println!("Example usage: ./mfdf /Users/<username>/mediafiles\n");
+    let len = args.len();
+    if len == 1 || (len > 1 && ["help", "--help", "-h"].iter().any(|&h| h == args[1])) {
+        print!("\n \
+            -- Media File Date Fixer (mfdf) --\n \
+            Recreates the original 'Created' and 'Modified' dates for common video\n \
+            or image files which get overwritten when copied from a recording device.\n \
+            Requires a directory containing media files.\n \
+            Example usage: ./mfdf ~/Desktop/copiedfiles\n \
+        \n");
         exit(0);
     }
+    // Get a directory path as the single argument
     let dir_path = &args[1];
     let report = fix_dates(dir_path);
+    print!("\n \
+        mfdf report for files in {}:\n \
+        examined: {}\n \
+        updated:  {}\n \
+        errors:   {}\n \
+    ",  dir_path, report.examined, report.updated, report.failed);
 
-    println!("\nmfdf report for files in {}:\n", dir_path);
-    println!("examined: {}", report.examined);
-    println!("updated:  {}", report.updated);
-    println!("errors:   {}\n", report.failed);
     if !report.errors.is_empty() {
-        println!("error details:");
+        println!("\nerror details:");
         for error_msg in &report.errors {
             println!("{}", error_msg);
         }

@@ -69,7 +69,7 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
     let err_msg = ErrorMsg::default();
     let parser = &mut MediaParser::new();
 
-    // Recusively search the directory, filter out any Unix hidden files
+    // Recursively search the directory, filter out any Unix hidden files
     for entry in WalkDir::new(dir_path)
         .into_iter()
         .filter_entry(|e| !is_hidden(e)) {
@@ -121,6 +121,7 @@ pub fn fix_dates<'a>(dir_path: &str) -> Report {
 }
 
 /// Parses a file to determine if it has suitable metadata (EXIF etc.)
+/// and uses the found data to update the file timestamps
 fn parse_file<'a>(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> Result<()> {
 
     let mut timestamps = TimeStamps::default();
