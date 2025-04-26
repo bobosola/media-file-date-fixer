@@ -137,7 +137,7 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
     else {
         Err(MissingDatesError{})?;
     }
-    Ok(())/
+    Ok(())
 }
 
 /// Skip hidden files and directories on Unix-like systems

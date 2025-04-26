@@ -7,7 +7,7 @@ fn main() -> () {
 
     let args: Vec<String> = env::args().collect();
     let num_args = args.len();
-    if num_args == 1 || (num_args > 1 && ["help", "--help", "-h", "-?", "/?"].iter().any(|&h| h == args[1])) {
+    if num_args == 1 || (num_args > 1 && ["help", "--help", "-h", "-?", "/?"].iter().any(|h| h == &args[1])) {
         print!("\n \
             -------------- Media File Date Fixer (mfdf) --------------\n \
             This app retrieves:\n \
