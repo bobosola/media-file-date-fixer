@@ -15,7 +15,7 @@ mod types;
 
 /// Attempts to fix various media file dates by reading dates from file metadata
 /// (Exif etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
-pub fn fix_dates<'a>(dir_path: &str) -> Report {
+pub fn fix_dates(dir_path: &str) -> Report {
 
     let mut report = Report::default();
     let parser = &mut MediaParser::new();
