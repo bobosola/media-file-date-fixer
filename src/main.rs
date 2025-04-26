@@ -6,13 +6,13 @@ use media_file_date_corrector::fix_dates;
 fn main() -> () {
 
     let args: Vec<String> = env::args().collect();
-    let args_len = args.len();
-    if args_len == 1 || (args_len > 1 && ["help", "--help", "-h"].iter().any(|&h| h == args[1])) {
+    let num_args = args.len();
+    if num_args == 1 || (num_args > 1 && ["help", "--help", "-h", "-?", "/?"].iter().any(|&h| h == args[1])) {
         print!("\n \
             -------------- Media File Date Fixer (mfdf) --------------\n \
-            This app fixes:\n \
-             • the original 'Created' & 'Modified' dates for copied image files\n \
-             • the original 'Created' date for copied video files\n \
+            This app retrieves:\n \
+             • lost 'Created' & 'Modified' dates for copied image files\n \
+             • lost 'Created' dates for copied video files\n \
             It requires a directory path as its single argument.\n \
             It fixes all supported media files in that directory and all subdirectories.\n\n \
             Example usage: ./mfdf ~/Desktop/copiedfiles\n \
