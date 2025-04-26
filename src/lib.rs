@@ -61,7 +61,8 @@ pub fn fix_dates(dir_path: &str) -> Report {
     report
 }
 
-/// Parses a file to determine if it has suitable metadata
+/// Parses a file to determine if it has suitable metadata then uses
+/// the found data to update the file dates(s)
 fn parse_file(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> std::result::Result<(), Box<dyn Error>> {
 
     let ms = MediaSource::file_path(file_path)?;
@@ -81,6 +82,10 @@ fn parse_file(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> std
         datetimes.created_date = Some(dt);
 
         // Same for 'Modified' date
+        // Note that if the 'Created' date cannot be obtained, then the function
+        // exits without trying to find a 'Modified' date. That's because if
+        // there's no 'Creation' date, then it's a very safe bet that there won't
+        // be a 'Modifed date' either.
         let exif_tag = exif.get(ExifTag::ModifyDate)
            .ok_or_else(|| MissingModifyDateError{file_path: rel_path.into()})?;
         let dt = exif_tag.as_time()
@@ -102,15 +107,11 @@ fn parse_file(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> std
     }
 
     // Update the file if we have retrieved any valid datetimes
-    if datetimes.created_date.is_some() || datetimes.modified_date.is_some() {
-
+    if let Some(created) = datetimes.created_date {
         let file_to_amend = File::options().write(true).open(file_path)?;
-
-        if let Some(dt) = datetimes.created_date {
-            file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(dt)))?;
-        }
-        if let Some(dt) = datetimes.modified_date {
-            file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(dt)))?;
+        file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+        if let Some(modified) = datetimes.modified_date {
+            file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(modified)))?;
         }
     }
     Ok(())
