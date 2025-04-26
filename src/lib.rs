@@ -1,17 +1,58 @@
 use std::fs:: {File, FileTimes };
+use std::fmt;
 #[cfg(target_os = "macos")]
 use std::os::macos::fs::FileTimesExt;
 #[cfg(target_os = "windows")]
 use std::os::windows::fs::FileTimesExt;
 use std::time:: SystemTime;
 use std::path::{ Path, PathBuf };
+use std::error::Error;
 use walkdir::{ WalkDir, DirEntry };
 use nom_exif::*;
 use pathdiff:: diff_paths;
-use std::error::Error;
+use chrono:: {DateTime, FixedOffset };
 
-use crate::types::types::*;
-mod types;
+// Summary report of application run
+pub struct Report {
+    pub examined: i32,
+    pub updated: i32,
+    pub failed: i32,
+    pub errors: Vec<String>
+}
+impl Default for Report {
+    fn default() -> Self {
+        return Report {
+            examined: 0,
+            updated: 0,
+            failed: 0,
+            errors: vec![]
+        }
+    }
+}
+
+// Holds any datetimes retrieved from metadata
+struct DateTimes {
+    created_date: Option<DateTime<FixedOffset>>,
+    modified_date: Option<DateTime<FixedOffset>>
+}
+impl Default for DateTimes {
+    fn default() -> Self {
+        return DateTimes {
+            created_date: None,
+            modified_date: None
+        }
+    }
+}
+
+// Error for failure to read or parse both datetimes
+#[derive(Debug)]
+struct MissingDatesError {}
+impl fmt::Display for MissingDatesError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "No dates found in metadata")
+    }
+}
+impl Error for MissingDatesError {}
 
 /// Attempts to fix various media file dates by reading dates from file metadata
 /// (Exif etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
@@ -32,10 +73,10 @@ pub fn fix_dates(dir_path: &str) -> Report {
                             report.examined -= 1
                         }
                         else if metadata.is_file() {
-                            match parse_file(entry.path(), &rel_path, parser){
+                            match update_file(entry.path(), parser){
                                 Ok(_) => report.updated +=1,
                                 Err(e) => {
-                                    // nom_exif errors
+                                    // nom_exif and MissingDate errors
                                     report.failed += 1;
                                     report.errors.push(format!("{} in '{}'", e, &rel_path));
                                 }
@@ -46,13 +87,13 @@ pub fn fix_dates(dir_path: &str) -> Report {
                         // WalkDir OS errors where the program does not have access perms
                         // or if the path does not exist (with path shortened to relative path)
                         report.failed += 1;
-                        report.errors.push(format!("{} in '{}'", e, &rel_path).replace(dir_path, ""));
+                        report.errors.push(format!("{}", e).replace(dir_path, ""));
                     }
                 }
                 report.examined += 1;
             },
             Err(e) => {
-               // Top level WalkDir OS error (e.g. no perms to argument dir_path)
+               // Top level WalkDir OS error (e.g. no perms to argument directory)
                 report.failed += 1;
                 report.errors.push(e.to_string());
             }
@@ -61,60 +102,42 @@ pub fn fix_dates(dir_path: &str) -> Report {
     report
 }
 
-/// Parses a file to determine if it has suitable metadata then uses
-/// the found data to update the file dates(s)
-fn parse_file(file_path: &Path, rel_path: &str, parser: &mut MediaParser) -> std::result::Result<(), Box<dyn Error>> {
+/// Parses a file to determine if it has suitable metadata
+/// then uses the found data to update the file dates(s)
+fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Result<(), Box<dyn Error>> {
 
-    let ms = MediaSource::file_path(file_path)?;
     let mut datetimes = DateTimes::default();
+    let ms = MediaSource::file_path(file_path)?;
 
     if ms.has_exif() {
         // .heic, .heif, jpg/jpeg, *.tiff/tif, *.RAF (Fujifilm RAW)
-
         let iter: ExifIter = parser.parse(ms)?;
         let exif: Exif = iter.into();
-
-        // If a 'Created' date tag is found, try to convert it to a DateTime
-        let exif_tag = exif.get(ExifTag::CreateDate)
-           .ok_or_else(|| MissingCreateDateError{file_path: rel_path.into()})?;
-        let dt = exif_tag.as_time()
-            .ok_or_else(|| BadCreateDateError{file_path: rel_path.into()})?;
-        datetimes.created_date = Some(dt);
-
-        // Same for 'Modified' date
-        // Note that if the 'Created' date cannot be obtained, then the function
-        // exits without trying to find a 'Modified' date. That's because if
-        // there's no 'Creation' date, then it's a very safe bet that there won't
-        // be a 'Modifed date' either.
-        let exif_tag = exif.get(ExifTag::ModifyDate)
-           .ok_or_else(|| MissingModifyDateError{file_path: rel_path.into()})?;
-        let dt = exif_tag.as_time()
-            .ok_or_else(|| BadModifyDateError{file_path: rel_path.into()})?;
-        datetimes.modified_date = Some(dt);
+        datetimes.created_date = get_image_date(ExifTag::CreateDate, &exif);
+        datetimes.modified_date = get_image_date(ExifTag::ModifyDate, &exif);
     }
     else if ms.has_track() {
         // ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp
         // or Matroska-based file format: .webm, *.mkv, *.mka
-
+        // Similar process for video files, but only the Created data is available
         let info: TrackInfo = parser.parse(ms)?;
-
-        // Same process for video files, but only the Created data is available
-        let track_tag = info.get(TrackInfoTag::CreateDate)
-            .ok_or_else(|| MissingCreateDateError{ file_path: rel_path.into() })?;
-        let dt = track_tag.as_time()
-            .ok_or_else(|| BadCreateDateError{ file_path: rel_path.into() })?;
-        datetimes.created_date = Some(dt);
+        datetimes.created_date = get_video_date(TrackInfoTag::CreateDate, &info);
     }
 
     // Update the file if we have retrieved any valid datetimes
-    if let Some(created) = datetimes.created_date {
+    if datetimes.created_date.is_some() || datetimes.modified_date.is_some() {
         let file_to_amend = File::options().write(true).open(file_path)?;
-        file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+        if let Some(created) = datetimes.created_date {
+            file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+        }
         if let Some(modified) = datetimes.modified_date {
             file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(modified)))?;
         }
     }
-    Ok(())
+    else {
+        Err(MissingDatesError{})?;
+    }
+    Ok(())/
 }
 
 /// Skip hidden files and directories on Unix-like systems
@@ -134,4 +157,24 @@ fn get_relative_path(dir_path: &str, entry: &DirEntry) -> String {
         Some(short_path) => short_path.display().to_string(),
         None => full_file_path.display().to_string()
     }
+}
+
+/// Tries to convert an image Exif tag to a DateTime
+fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
+    if let Some(tag) = exif.get(tag) {
+        if let Some(dt) = tag.as_time() {
+            return Some(dt);
+        }
+    }
+    None
+}
+
+/// Tries to convert a video metadata tag to a DateTime
+fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
+    if let Some(tag) = info.get(tag) {
+        if let Some(dt) = tag.as_time() {
+            return Some(dt);
+        }
+    }
+    None
 }
