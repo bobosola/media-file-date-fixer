@@ -10,9 +10,11 @@ fn main() -> () {
     if args_len == 1 || (args_len > 1 && ["help", "--help", "-h"].iter().any(|&h| h == args[1])) {
         print!("\n \
             -------------- Media File Date Fixer (mfdf) --------------\n \
-            Recreates the original 'Created' date for copied video and image files.\n \
-            Modified dates are also recreated for copied image files.\n\n \
-            Requires a directory path as the single argument.\n \
+            This app fixes:\n \
+             • the original 'Created' & 'Modified' dates for copied image files\n \
+             • the original 'Created' date for copied video files\n \
+            It requires a directory path as its single argument.\n \
+            It fixes all supported media files in that directory and all subdirectories.\n\n \
             Example usage: ./mfdf ~/Desktop/copiedfiles\n \
         \n");
         exit(0);

@@ -8,7 +8,6 @@ walkdir = "2.5.0"
 nom-exif = "2.5.1"
 chrono =  { version = "0.4.40", features = ["std"] }
 pathdiff = "0.2.3"
-formatx = "0.2.3"
 
 [[bin]]
 name = "mfdf"
