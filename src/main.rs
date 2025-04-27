@@ -1,6 +1,6 @@
 
 use std::{ env, process::exit };
-use media_file_date_corrector::fix_dates;
+use media_file_date_fixer::fix_dates;
 
 /// Simple runner for the media_file_date_corrector library
 fn main() -> () {
