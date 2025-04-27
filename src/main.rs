@@ -10,7 +10,7 @@ fn main() -> () {
     if num_args == 1 || (num_args > 1 && ["help", "--help", "-h", "-?", "/?"].iter().any(|h| h == &args[1])) {
         print!("\n \
             -------------- Media File Date Fixer (mfdf) --------------\n \
-            This app retrieves:\n \
+            This application retrieves:\n \
              • lost 'Created' & 'Modified' dates for copied image files\n \
              • lost 'Created' dates for copied video files\n \
             It requires a directory path as its single argument.\n \
