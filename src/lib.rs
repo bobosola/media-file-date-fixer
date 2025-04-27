@@ -159,7 +159,7 @@ fn get_relative_path(dir_path: &str, entry: &DirEntry) -> String {
     }
 }
 
-/// Tries to convert an image Exif tag to a DateTime
+/// Try to convert an image Exif tag to a DateTime
 fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = exif.get(tag) {
         if let Some(dt) = tag.as_time() {
@@ -169,7 +169,7 @@ fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     None
 }
 
-/// Tries to convert a video metadata tag to a DateTime
+/// Try to convert a video metadata tag to a DateTime
 fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = info.get(tag) {
         if let Some(dt) = tag.as_time() {
