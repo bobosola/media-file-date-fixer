@@ -19,7 +19,7 @@ Note that file metadata can be missing from processed media files (i.e. download
 - a count of files with errors (unsupported file types, permission problems, or files with missing or damaged metadata)
 - an errors list with error descriptions and the file paths of the problem files
 
-The code is built using:
+The code uses four external crates:
 - [walkdir](https://github.com/BurntSushi/walkdir) for fast recursive directory traversal
 - [nom-exif](https://github.com/mindeng/nom-exif) for the file metadata parsing
 - [chrono](https://github.com/chronotope/chrono) for the date and time handling
