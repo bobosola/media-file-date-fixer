@@ -28,11 +28,11 @@ fn main() -> () {
         examined: {}\n \
         updated:  {}\n \
         errors:   {}\n \
-    ",  dir_path, report.examined, report.updated, report.failed);
+    ",  dir_path, report.examined, report.updated, report.errors);
 
-    if !report.errors.is_empty() {
+    if !report.err_msgs.is_empty() {
         println!("\nerror details:");
-        for error_msg in &report.errors {
+        for error_msg in &report.err_msgs {
             println!("{}", error_msg);
         }
     }

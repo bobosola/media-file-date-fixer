@@ -16,16 +16,16 @@ use chrono:: {DateTime, FixedOffset };
 pub struct Report {
     pub examined: i32,
     pub updated: i32,
-    pub failed: i32,
-    pub errors: Vec<String>
+    pub errors: i32,
+    pub err_msgs: Vec<String>
 }
 impl Default for Report {
     fn default() -> Self {
         return Report {
             examined: 0,
             updated: 0,
-            failed: 0,
-            errors: vec![]
+            errors: 0,
+            err_msgs: vec![]
         }
     }
 }
@@ -77,8 +77,8 @@ pub fn fix_dates(dir_path: &str) -> Report {
                                 Ok(_) => report.updated +=1,
                                 Err(e) => {
                                     // nom_exif and MissingDate errors
-                                    report.failed += 1;
-                                    report.errors.push(format!("{} in '{}'", e, &rel_path));
+                                    report.errors += 1;
+                                    report.err_msgs.push(format!("{} in '{}'", e, &rel_path));
                                 }
                             }
                         }
@@ -86,16 +86,16 @@ pub fn fix_dates(dir_path: &str) -> Report {
                     Err(e) => {
                         // WalkDir OS errors where the program does not have access perms
                         // or if the path does not exist (with path shortened to relative path)
-                        report.failed += 1;
-                        report.errors.push(format!("{}", e).replace(dir_path, ""));
+                        report.errors += 1;
+                        report.err_msgs.push(format!("{}", e).replace(dir_path, ""));
                     }
                 }
                 report.examined += 1;
             },
             Err(e) => {
                // Top level WalkDir OS error (e.g. no perms to argument directory)
-                report.failed += 1;
-                report.errors.push(e.to_string());
+                report.errors += 1;
+                report.err_msgs.push(e.to_string());
             }
         }
     }
