@@ -1,9 +1,5 @@
 use std::fs:: {File, FileTimes };
 use std::fmt;
-#[cfg(target_os = "macos")]
-use std::os::macos::fs::FileTimesExt;
-#[cfg(target_os = "windows")]
-use std::os::windows::fs::FileTimesExt;
 use std::time:: SystemTime;
 use std::path::{ Path, PathBuf };
 use std::error::Error;
@@ -127,8 +123,39 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
     // Update the file if we have retrieved any valid datetimes
     if datetimes.created_date.is_some() || datetimes.modified_date.is_some() {
         let file_to_amend = File::options().write(true).open(file_path)?;
-        if let Some(created) = datetimes.created_date {
-            file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+
+        // 'Created' dates on Unix-like systems (other than MacOS) are a big nasty mess. They either have
+        // none at all, or they might have non-POSIX extensions which record a 'Created' date, but under 
+        // differing names under differing systems, none of which can be changed via an API.
+        // See https://unix.stackexchange.com/questions/7562/what-file-systems-on-linux-store-the-creation-time
+        // But they do support altering the 'Modifed date. 
+
+        cfg_if::cfg_if! {
+            if #[cfg(target_os="macos")] {
+                // MacOS supports changing the 'Created' date
+                use std::os::macos::fs::FileTimesExt;
+                if let Some(created) = datetimes.created_date {
+                    file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+                }
+            }
+            else if #[cfg(target_os="windows")] {
+                // Windows supports changing the 'Created' date
+                #[cfg(target_os = "windows")]
+                use std::os::windows::fs::FileTimesExt;
+                if let Some(created) = datetimes.created_date {
+                    file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
+                }
+            } 
+            else {
+                // Systems which don't have changeable 'Created' dates. So, given that we cannot obtain
+                // 'Modified' dates for video files, we will insert the metadata 'Created' date for all
+                // media types into the file 'Modifed' date for these systems. Smelly, but better than nothing.
+                if datetimes.created_date.is_some() && !datetimes.modified_date.is_some() {
+                    if let Some(created) = datetimes.created_date {
+                        file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(created)))?;
+                    }       
+                }
+            }        
         }
         if let Some(modified) = datetimes.modified_date {
             file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(modified)))?;
