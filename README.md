@@ -16,7 +16,7 @@ It recursively scans a directory containing supported media files, retrieves met
 Note that file metadata can be missing from processed media files (i.e. downloaded from social media sites or after editing in software), so this code is most effective when working with files which have been copied directly from a camera. On completion, it returns a summary report containing:
 - a count of the total number of files examined
 - a count of the files where one or both of the dates were updated
-- a count of files with errors (unsupported file types, permission problems, or with files missing or damaged metadata)
+- a count of files with errors (unsupported file types, permission problems, or files with missing or damaged metadata)
 - an errors list with error descriptions and the file paths of the problem files
 
 The code is built using:
