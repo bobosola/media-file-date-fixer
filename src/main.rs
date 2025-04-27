@@ -14,7 +14,7 @@ fn main() -> () {
              • lost 'Created' & 'Modified' dates for copied image files\n \
              • lost 'Created' dates for copied video files\n \
             It requires a directory path as its single argument.\n \
-            It fixes all supported media files in that directory and all subdirectories.\n\n \
+            It recursively fixes the dates for all supported media files.\n\n \
             Example usage: ./mfdf ~/Desktop/copiedfiles\n \
         \n");
         exit(0);
