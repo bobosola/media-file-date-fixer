@@ -28,7 +28,7 @@ fn main() -> () {
         examined: {}\n \
         updated:  {}\n \
         errors:   {}\n \
-    ",  dir_path, report.examined, report.updated, report.errors);
+    ", dir_path, report.examined, report.updated, report.errors);
 
     if !report.err_msgs.is_empty() {
         println!("\nerror details:");

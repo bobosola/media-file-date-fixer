@@ -84,7 +84,7 @@ pub fn fix_dates(dir_path: &str) -> Report {
                         }
                     },
                     Err(e) => {
-                        // WalkDir OS errors where the program does not have access perms
+                        // walkdir OS errors where the program does not have access perms
                         // or if the path does not exist (with path shortened to relative path)
                         report.errors += 1;
                         report.err_msgs.push(format!("{}", e).replace(dir_path, ""));
@@ -93,7 +93,7 @@ pub fn fix_dates(dir_path: &str) -> Report {
                 report.examined += 1;
             },
             Err(e) => {
-               // Top level WalkDir OS error (e.g. no perms to argument directory)
+               // Top level walkdir OS error (e.g. no perms to argument directory)
                 report.errors += 1;
                 report.err_msgs.push(e.to_string());
             }
@@ -119,7 +119,7 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
     else if ms.has_track() {
         // ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp
         // or Matroska-based file format: .webm, *.mkv, *.mka
-        // Similar process for video files, but only the Created data is available
+        // Similar process for video files, but only the Created date is available
         let info: TrackInfo = parser.parse(ms)?;
         datetimes.created_date = get_video_date(TrackInfoTag::CreateDate, &info);
     }
