@@ -1,6 +1,6 @@
 # Media File Date Fixer
 
-A common problem when copying media files from mixed sources (typically from SD cards) is that the original *Created* and *Modified* dates can often be overwritten on the copied files. This results in the copied files all showing the same date and time, thus making it impossible to order them by date for sequential viewing or editing. This repo fixes that problem for the file formats listed below:
+A common problem when copying media files from mixed sources (typically off SD cards from cameras, action cams, drones etc.) is that the original *Created* and *Modified* dates can often be overwritten on the copied files. This results in the copied files all showing the same date and time, thus making it impossible to order them by date in a single directory for sequential viewing or editing. And because each file type has a different naming convention, a mixed file collection cannot be ordered by sequential names. This repo fixes that problem for the file formats listed below:
 
 - Image
   - *.heic, *.heif, etc.
