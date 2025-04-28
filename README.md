@@ -11,16 +11,14 @@ A common problem when copying media files from mixed sources (typically files on
   - ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp, etc.
   - Matroska based file format: *.webm, *.mkv, *.mka, etc.
 
-The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the copied file's system dates. The dates it can retrieve are:
-- for images: the `Created` and `Modified` dates
-- for videos: the `Created` date only
+The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the copied file's system dates. It can retrieve the `Created` and `Modified` dates for images, but only the `Created` date for videos.
 
 OS support for altering dates in code looks like this:
 - MacOS: `Created` and `Modified`
 - Windows: `Created` and `Modified`
 - Linux: `Modified` only ([more details](https://www.figuiere.net/technotes/notes/tn005/))
 
-So Macs and Windows happily accept the corrected dates. But there's an obvious probem for fixing up video dates on Linux: The metadata can only supply the `Created` date, but Linux only allows altering the `Modified` date. So for Linux, the code uses a video's `Created` metadata date to update the system `Modified` date, which seems like a reasonable compromise (both have the same value anyway for files taken off a camera).
+So Macs and Windows happily accept the corrected dates. But there's an obvious problem for fixing up video dates on Linux: The metadata can only supply the video `Created` date, but Linux only allows altering the `Modified` date. So for Linux, the code uses a video's `Created` metadata date to update the system `Modified` date, which seems like a reasonable compromise that's better than nothing.
 
 On completion, the code returns a summary report containing:
 - a count of the total number of files examined

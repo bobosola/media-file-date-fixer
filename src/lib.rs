@@ -146,10 +146,10 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
                 }
             }
             else {
-                // We are now down in the sewer with systems which don't have editable 'Created' dates.
-                // So, given that we cannot obtain 'Modified' dates for video files, we will insert the
-                // metadata 'Created' date for all media types into the 'Modified' date for these
-                // systems. Smelly, but better than having no original camera dates at all!
+                // Other Unix-like systems don't have editable 'Created' dates. So, given that we cannot
+                // obtain 'Modified' dates for video files, we will insert the metadata 'Created' date
+                // for all media types into the 'Modified' date for these systems. Not ideal, but better
+                // than having no original camera dates at all!
                 if datetimes.created_date.is_some() {
                     datetimes.modified_date = datetimes.created_date;
                 }
