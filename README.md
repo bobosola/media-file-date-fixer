@@ -20,7 +20,7 @@ The dates it can retrieve are:
 OS support for altering dates in code looks like this:
 - MacOS: `Created` and `Modified`
 - Windows: `Created` and `Modified`
-- Linux: `Modified` only ([more details])(https://www.figuiere.net/technotes/notes/tn005/)
+- Linux: `Modified` only ([more details](https://www.figuiere.net/technotes/notes/tn005/))
 
 So Macs and Windows happily accept the corrected dates. But there's an obvious probem for fixing up video dates on Linux: The metadata can only supply the `Created` date, but Linux only allows altering the `Modified` date. So for Linux, the code uses a video's `Created` metadata date to update the system `Modified` date, which seems like a reasonable compromise (both have the same value anyway for files taken off a camera).
 
