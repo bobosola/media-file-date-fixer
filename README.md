@@ -29,4 +29,4 @@ On completion, the code returns a summary report containing:
 - an errors list with error descriptions and the file paths of the problem files
 
 > [!TIP]
-> File metadata can be missing from processed media files (i.e. downloaded from social media sites or after editing in software), so this code is most effective when working with files which have been copied directly from a camera.
+> File metadata can be missing from processed media files (i.e. downloaded from social media sites or after editing in software), so this code is most effective when working with files which have been copied directly off a camera.
