@@ -11,9 +11,7 @@ A common problem when copying media files from mixed sources (typically files on
   - ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp, etc.
   - Matroska based file format: *.webm, *.mkv, *.mka, etc.
 
-The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the copied file's system dates.
-
-The dates it can retrieve are:
+The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the copied file's system dates. The dates it can retrieve are:
 - for images: the `Created` and `Modified` dates
 - for videos: the `Created` date only
 
