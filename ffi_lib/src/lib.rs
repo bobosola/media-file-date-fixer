@@ -1,18 +1,22 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
-use mfdf::fix_dates;
+use mfdf::{fix_dates, Report};
 
 // Called from the other side in Swift, C#, whatever
 #[unsafe(no_mangle)]
 pub extern "C" fn make_report(input: *const c_char) -> *mut c_char {
-    // Convert the C path string to a Rust String
+
+    // Convert the user-supplied C path string to a Rust String
+    // NB: a non-UTF-8 path will fail and be picked up in the report
     let c_path = unsafe {
         let c_path = CStr::from_ptr(input);
         c_path.to_string_lossy().to_owned()
     };
 
     // Fix the dates in the supplied path and generate a report
-    let report = fix_dates(c_path.as_ref());
+    let report: Report = fix_dates(c_path.as_ref());
+
+    // Return the report text as a C string
     let mut report_string = format!(
         "mfdf report for files in {}\n \
          examined: {}\n \

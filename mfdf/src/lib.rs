@@ -51,9 +51,9 @@ impl fmt::Display for MissingDatesError {
 impl Error for MissingDatesError {}
 
 /// Attempts to fix lost Created & Modified dates in common media files
-/// by recovering the datesfrom file metadata (Exif etc.). It then updates
+/// by recovering the dates from file metadata (Exif etc.). It then updates
 /// the files' Inode/WinMFT 'Created' and 'Modifed' dates accordingly.
-/// It requires a directory path as the single argument
+/// It requires a directory path as the single argument.
 pub fn fix_dates(dir_path: &str) -> Report {
 
     let mut report = Report::default();
