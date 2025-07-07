@@ -1,0 +1,13 @@
+[package]
+name = "mfdf"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+edition.workspace = true
+
+[dependencies]
+walkdir = "2.5.0"
+nom-exif = "2.5.4"
+chrono =  { version = "0.4.41", features = ["std"] }
+pathdiff = "0.2.3"
+cfg-if = "1.0.0"

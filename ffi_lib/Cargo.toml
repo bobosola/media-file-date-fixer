@@ -1,0 +1,12 @@
+[package]
+name = "mfdf_ffi"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+edition.workspace = true
+
+[dependencies]
+mfdf = { path = "../mfdf" }
+
+[lib]
+crate-type = ["cdylib"]
