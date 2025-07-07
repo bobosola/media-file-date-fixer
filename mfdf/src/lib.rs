@@ -8,7 +8,7 @@ use nom_exif::*;
 use pathdiff:: diff_paths;
 use chrono:: {DateTime, FixedOffset };
 
-// Summary report of application run
+/// Summary report of application run
 pub struct Report {
     pub examined: i32,
     pub updated: i32,
@@ -50,9 +50,10 @@ impl fmt::Display for MissingDatesError {
 }
 impl Error for MissingDatesError {}
 
-// This is where the work is done.
-// It attempts to fix various media file dates by reading dates from file metadata
-// (Exif etc.) and updating the file Inode/WinMFT 'Created' and 'Modifed' dates.
+/// Attempts to fix lost Created & Modified dates in common media files
+/// by recovering the datesfrom file metadata (Exif etc.). It then updates
+/// the files' Inode/WinMFT 'Created' and 'Modifed' dates accordingly.
+/// It requires a directory path as the single argument
 pub fn fix_dates(dir_path: &str) -> Report {
 
     let mut report = Report::default();
@@ -98,8 +99,8 @@ pub fn fix_dates(dir_path: &str) -> Report {
      report
  }
 
-/// Parses a file to determine if it has suitable metadata
-/// then uses the found data to update the file dates(s)
+// Parses a file to determine if it has suitable metadata
+// then uses the found data to update the file dates(s)
 fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Result<(), Box<dyn Error>> {
 
     let mut datetimes = DateTimes::default();

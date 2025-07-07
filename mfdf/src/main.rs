@@ -1,5 +1,6 @@
 use std::{ env, process::exit };
 use mfdf::fix_dates;
+
 // Simple runner for the media_file_date_fixer library
 fn main() -> () {
 
