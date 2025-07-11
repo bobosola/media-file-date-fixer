@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "mfdf (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "mfdf (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
