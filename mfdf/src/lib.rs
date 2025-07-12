@@ -64,6 +64,7 @@ pub fn fix_dates(dir_path: &str) -> Report {
         match entry {
             Ok(entry) => {
                 let relative_path = get_relative_path(dir_path, &entry);
+                // NB: this is WalkDir metadata, not media metadata!
                 let metadata = match entry.metadata() {
                     Ok(metadata) => metadata,
                     Err(e) => {

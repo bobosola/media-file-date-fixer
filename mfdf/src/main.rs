@@ -27,12 +27,12 @@ fn main() -> () {
     print!("\n \
         mfdf report for files in {}:\n \
         examined: {}\n \
-        updated:  {}\n \
-        errors:   {}\n \
+        updated: {}\n \
+        failed: {}\n \
     ", dir_path, report.examined, report.updated, report.errors);
 
     if !report.err_msgs.is_empty() {
-        println!("\nerror details:");
+        println!("\nFailure details:");
         for error_msg in &report.err_msgs {
             println!("{}", error_msg);
         }

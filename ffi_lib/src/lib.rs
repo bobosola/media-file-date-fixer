@@ -18,15 +18,15 @@ pub extern "C" fn make_report(input: *const c_char) -> *mut c_char {
 
     // Return the report text as a C string
     let mut report_string = format!(
-        "mfdf report for files in {}\n \
-         examined: {}\n \
-         updated:  {}\n \
-         errors:   {}\n", c_path, report.examined, report.updated, report.errors);
+        "mfdf report for files in {}:\n \
+        • examined: {}\n \
+        • updated: {}\n \
+        • failed: {}\n", c_path, report.examined, report.updated, report.errors);
 
     if !report.err_msgs.is_empty() {
         let newline = String::from("\n");
         report_string.push_str(&newline);
-        report_string.push_str(&String::from("error details:"));
+        report_string.push_str(&String::from("Failure details:"));
         for error_msg in &report.err_msgs {
             report_string.push_str(&newline);
             report_string.push_str(error_msg);
