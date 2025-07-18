@@ -1,7 +1,7 @@
 use std::fs:: {File, FileTimes };
 use std::fmt;
 use std::time:: SystemTime;
-use std::path::{ Path, PathBuf };
+use std::path::{ Path };
 use std::error::Error;
 use walkdir::{ WalkDir, DirEntry };
 use nom_exif::*;
@@ -12,6 +12,7 @@ use chrono:: {DateTime, FixedOffset };
 pub struct Report {
     pub examined: i32,
     pub updated: i32,
+    pub ignored: i32,
     pub errors: i32,
     pub err_msgs: Vec<String>
 }
@@ -20,6 +21,7 @@ impl Default for Report {
         return Report {
             examined: 0,
             updated: 0,
+            ignored: 0,
             errors: 0,
             err_msgs: vec![]
         }
@@ -40,21 +42,44 @@ impl Default for DateTimes {
     }
 }
 
-// Error for failure to read datetimes
 #[derive(Debug)]
-struct MissingDatesError {}
-impl fmt::Display for MissingDatesError {
+enum DateFixError {
+    MissingDates,
+    MissingMetadata,
+    IoError(std::io::Error),
+    ParseError(String),
+}
+
+impl fmt::Display for DateFixError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "No dates found in metadata")
+        match self {
+            DateFixError::MissingDates => write!(f, "No dates found in metadata"),
+            DateFixError::MissingMetadata => write!(f, "Missing metadata"),
+            DateFixError::IoError(e) => write!(f, "IO error: {}", e),
+            DateFixError::ParseError(msg) => write!(f, "{}", msg),
+        }
     }
 }
-impl Error for MissingDatesError {}
+
+impl Error for DateFixError {}
+
+impl From<std::io::Error> for DateFixError {
+    fn from(error: std::io::Error) -> Self {
+        DateFixError::IoError(error)
+    }
+}
+
+impl From<nom_exif::Error> for DateFixError {
+    fn from(error: nom_exif::Error) -> Self {
+        DateFixError::ParseError(error.to_string())
+    }
+}
 
 /// Attempts to fix lost Created & Modified dates in common media files
 /// by recovering the dates from file metadata (Exif etc.). It then updates
-/// the files' Inode/WinMFT 'Created' and 'Modifed' dates accordingly.
+/// the files' Inode/WinMFT 'Created' and/or 'Modifed' dates accordingly.
 /// It requires a directory path as the single argument.
-pub fn fix_dates(dir_path: &str) -> Report {
+pub fn fix_dates(dir_path: &Path) -> Report {
 
     let mut report = Report::default();
     let parser = &mut MediaParser::new();
@@ -64,6 +89,7 @@ pub fn fix_dates(dir_path: &str) -> Report {
         match entry {
             Ok(entry) => {
                 let relative_path = get_relative_path(dir_path, &entry);
+                // Check OS file metadata
                 let metadata = match entry.metadata() {
                     Ok(metadata) => metadata,
                     Err(e) => {
@@ -73,23 +99,29 @@ pub fn fix_dates(dir_path: &str) -> Report {
                      }
                  };
 
-                // Ignore directories
+                // Ignore directories but look at all the files
                  if metadata.is_dir() {
                      continue;
                  }
-
                  report.examined += 1;
-                 match update_file(entry.path(), parser) {
-                     Ok(_) => report.updated +=1,
-                     Err(e) => {
-                         // nom_exif and MissingDate errors
-                         report.errors += 1;
-                         report.err_msgs.push(format!("{} in '{}'", e, relative_path));
+
+                 // Skip probable non-media or unsupported file types by checking the file
+                 // extension to avoid unnecessary parsing
+                 if !is_supported_media_file(entry.path()) {
+                    report.ignored +=1;
+                 }
+                 else {
+                     // These look like supported media files, so try to parse for image/video metadata
+                     match update_file(entry.path(), parser) {
+                         Ok(_) => report.updated +=1,
+                         Err(e) => {
+                             report.errors += 1;
+                             report.err_msgs.push(format!("{} in '{}'", e, relative_path));
+                         }
                      }
                  }
              },
-             // walkdir OS errors where the program does not have access perms
-             // or if the path does not exist
+             // walkdir OS errors (e.g. the path does not exist)
              Err(e) => {
                  report.errors += 1;
                  report.err_msgs.push(e.to_string());
@@ -99,9 +131,25 @@ pub fn fix_dates(dir_path: &str) -> Report {
      report
  }
 
-// Parses a file to determine if it has suitable metadata
-// then uses the found data to update the file dates(s)
-fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Result<(), Box<dyn Error>> {
+// Check if the file extension indicates a supported media file
+fn is_supported_media_file(file_path: &Path) -> bool {
+    if let Some(ext) = file_path.extension() {
+        if let Some(ext_str) = ext.to_str() {
+            let ext_lower = ext_str.to_lowercase();
+            return matches!(
+                ext_lower.as_str(),
+                "jpg" | "jpeg" | "tiff" | "tif" | "heic" | "heif" |
+                "raf" | "png" | "gif" | "bmp" | "webp" |
+                "mp4" | "mov" | "3gp" | "webm" | "mkv" | "mka" | "avi" | "mts"
+            );
+        }
+    }
+    false
+}
+
+/// Parses a file to determine if it has suitable image or video metadata
+/// then uses the found metadata to update the file dates(s)
+fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Result<(), DateFixError> {
 
     let mut datetimes = DateTimes::default();
     let ms = MediaSource::file_path(file_path)?;
@@ -120,9 +168,12 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
         let info: TrackInfo = parser.parse(ms)?;
         datetimes.created_date = get_video_date(TrackInfoTag::CreateDate, &info);
     }
+    else {
+        return Err(DateFixError::MissingMetadata);
+    }
 
     if datetimes.created_date.is_none() && datetimes.modified_date.is_none() {
-        return Err(MissingDatesError{}.into());
+        return Err(DateFixError::MissingDates);
     }
 
     let file_to_amend = File::options().write(true).open(file_path)?;
@@ -143,7 +194,6 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Resul
         }
         else if #[cfg(target_os="windows")] {
             // Windows supports changing the 'Created' date
-            #[cfg(target_os = "windows")]
             use std::os::windows::fs::FileTimesExt;
             if let Some(created) = datetimes.created_date {
                 file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
@@ -178,9 +228,9 @@ fn is_hidden(entry: &DirEntry) -> bool {
 
 // Try to get the file path relative to the top level directory.
 // Defaults to the full file path on failure.
-fn get_relative_path(dir_path: &str, entry: &DirEntry) -> String {
+fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
     let full_file_path = entry.path().to_path_buf();
-    match diff_paths(&full_file_path, PathBuf::from(dir_path)) {
+    match diff_paths(&full_file_path, dir_path) {
         Some(short_path) => short_path.display().to_string(),
         None => full_file_path.display().to_string()
     }
