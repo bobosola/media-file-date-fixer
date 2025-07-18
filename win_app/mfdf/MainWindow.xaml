@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation. All rights reserved. -->
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. -->
 <!-- Licensed under the MIT License. See LICENSE in the project root for license information. -->
 
 <Window
@@ -10,16 +10,52 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="PickFolderButton" Content="Select Directory" Click="OnPickFolderClicked" Margin="10"/>
+    <Border>
+        <Border.Background>
+            <ImageBrush ImageSource="/Assets/cameras.png" Opacity="0.05" />
+        </Border.Background>
 
-        <ScrollViewer HorizontalScrollBarVisibility="Auto">
-            <TextBox x:Name="ResultText" 
-                     Margin="10" 
-                     TextWrapping="Wrap" 
-                     MaxWidth="500" />
-        </ScrollViewer>
-        
-    </StackPanel>
+        <Grid x:Name="MainGrid" Background="#C7E5F9" VerticalAlignment="Center" 
+              HorizontalAlignment="Center" Margin="10" BorderBrush="#F9DBC7" BorderThickness="3">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="230"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--Margin is left, top, right, bottom -->
+            <RichTextBlock x:Name="IntroText" Margin="20">
+                <Paragraph>
+                    <Bold>mfdf</Bold> recovers media files dates lost during copying.
+                    <LineBreak />
+                    <LineBreak />
+                    It can recover: <LineBreak /> 
+                    • the <Italic>Created</Italic> and <Italic>Modified</Italic> dates for common image files
+                    <LineBreak />
+                    • the <Italic>Created</Italic> date for common video files
+                    <LineBreak />
+                    <LineBreak />
+                    It fixes all supported file types in the chosen directory plus
+                    <LineBreak />
+                    any subdirectories. All other files are ignored.
+                    <LineBreak />
+                    <LineBreak />
+                    More details on the <Hyperlink NavigateUri="https://osola.org.uk/utils">app website</Hyperlink> .     
+                </Paragraph>
+            </RichTextBlock>
+
+            <Button x:Name="PickFolderButton" Content="Select your media file directory" 
+                    Click="OnPickFolderClicked" Margin="10"
+                    HorizontalAlignment="Center"
+                    Background="#CCF9C7"
+                    Grid.Row="1"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2" Margin="20">
+                <!-- Allow 16px for scrollbar-->
+                <TextBlock x:Name="ResultText" TextWrapping="Wrap" Margin="15,15,31,15" Visibility="Collapsed" />
+            </ScrollViewer>
+        </Grid>
+    </Border>
 
 </Window>
