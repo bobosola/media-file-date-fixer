@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3C0714842E2BCEC0004B99E1 /* libmfdf_ffi.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C0714832E2BCEC0004B99E1 /* libmfdf_ffi.dylib */; };
+		3C0714852E2BCEC0004B99E1 /* libmfdf_ffi.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 3C0714832E2BCEC0004B99E1 /* libmfdf_ffi.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3C0714662E2BCD87004B99E1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,10 +28,25 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		3C0714862E2BCEC0004B99E1 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3C0714852E2BCEC0004B99E1 /* libmfdf_ffi.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		3C0714572E2BCD87004B99E1 /* mfdf.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mfdf.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C0714652E2BCD87004B99E1 /* mfdfTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mfdfTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C07146F2E2BCD87004B99E1 /* mfdfUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mfdfUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C0714832E2BCEC0004B99E1 /* libmfdf_ffi.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmfdf_ffi.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C0714842E2BCEC0004B99E1 /* libmfdf_ffi.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +99,7 @@
 				3C0714592E2BCD87004B99E1 /* mfdf */,
 				3C0714682E2BCD87004B99E1 /* mfdfTests */,
 				3C0714722E2BCD87004B99E1 /* mfdfUITests */,
+				3C0714822E2BCEC0004B99E1 /* Frameworks */,
 				3C0714582E2BCD87004B99E1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +114,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3C0714822E2BCEC0004B99E1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3C0714832E2BCEC0004B99E1 /* libmfdf_ffi.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,6 +132,7 @@
 				3C0714532E2BCD87004B99E1 /* Sources */,
 				3C0714542E2BCD87004B99E1 /* Frameworks */,
 				3C0714552E2BCD87004B99E1 /* Resources */,
+				3C0714862E2BCEC0004B99E1 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -406,6 +437,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = osola.org.uk.mfdf;
@@ -443,6 +478,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = osola.org.uk.mfdf;
