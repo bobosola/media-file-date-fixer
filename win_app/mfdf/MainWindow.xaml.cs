@@ -79,7 +79,16 @@ namespace mfdf
 
                 // Show the results in the output TextBlock control
                 MainGrid.RowDefinitions[2].Height = new GridLength(350);
-                ResultText.Text = result;
+
+                if (String.IsNullOrEmpty(result))
+                {
+                    ResultText.Text = "Error: could not examine the chosen directory path";
+                }
+                else
+                {
+                    ResultText.Text = result;
+                }
+                    
                 ResultText.Visibility = Visibility.Visible;
             }
         }
