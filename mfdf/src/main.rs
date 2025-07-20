@@ -64,7 +64,7 @@ fn print_report(report: &mfdf::Report, dir_path: &Path) {
     println!("  examined: {}", report.examined);
     println!("  ignored:  {}", report.ignored);
     println!("  updated:  {}", report.updated);
-    println!("  errors:   {}", report.errors);
+    println!("  errors:   {}", report.failed);
 
     if !report.err_msgs.is_empty() {
         println!("\nerror details:");

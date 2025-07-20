@@ -13,82 +13,71 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            // 1. Blue gradient background
+            
+            // Blue gradient background layer
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(red: 0.42, green: 0.73, blue: 0.98), // light sky
-                    Color(red: 0.10, green: 0.35, blue: 0.87)  // deep cobalt
+                    Color(red: 0.85, green: 0.95, blue: 0.98),
+                    Color(red: 0.96, green: 0.99, blue: 1)
                 ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                startPoint: .top,
+                endPoint: .bottom
             )
-            .ignoresSafeArea()
 
-            // 2. Foreground content on top
-            VStack(alignment: .leading, spacing: 16) {
+            // Foreground stack content on top
+            VStack(alignment: .center) {
+                
+                Button("Choose Directory…") {
+                    chooseDirectory()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(10)
+                
                 if !introHidden {
-//                    Text("Select a directory and the Rust library will generate a short report for you.")
-//                        .font(.body)
-//                        .foregroundStyle(.white)   // <-- legible on blue
-                    
-                    let text = """
+                    let introText = """
                         This app can recover:  
-                        • the *Created* and *Modified* dates for common image file types  
-                        • the *Created* date for common video file types
-
-                        It fixes all the supported file types in your chosen directory plus any  
-                        subdirectories. All other file types are ignored.
-
-                        NB: files downloaded from social media often have their metadata removed  
-                        for privacy reasons, so dates usually cannot be recovered for such files.
+                        • the *Created* & *Modified* dates for heic, heif, jpg, tif, iiq & raf files
+                        • the *Created* dates for mp4, mov, 3gp, webm, mkv & mka video files
+                        
+                        It fixes the supported file dates in your chosen directory plus any  
+                        subdirectories. All other files are ignored.
                         
                         More details at the [app website](https://osola.org.uk/utils)
                         """
                     
                     let attributed = try! AttributedString(
-                        markdown: text,
+                        markdown: introText,
                         options: .init(
                             allowsExtendedAttributes: true,
-                            interpretedSyntax: .inlineOnlyPreservingWhitespace,
-                            failurePolicy: .returnPartiallyParsedIfPossible
+                            interpretedSyntax: .inlineOnlyPreservingWhitespace
                         )
                     )
-
                     Text(attributed)
-                        .padding()
+                        .padding(25)
                         .font(.body)
-                     //   .foregroundStyle(.white)   // <-- legible on blue
-                    
-                    
+                        .background(Color(red: 0.72, green: 0.91, blue: 0.97))
+                        .cornerRadius(20)
                 }
-
-                Button("Choose Directory…") {
-                    chooseDirectory()
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.white.opacity(0.25))        // frosted glass look
 
                 if !report.isEmpty {
                     ScrollView {
                         Text(report)
-                            .font(.system(.body, design: .monospaced))
+                            .padding(25)
+                            .font(.body)
                             .textSelection(.enabled)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .scrollContentBackground(.hidden) // macOS 13+
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-                    .padding(.top, 8)
-                }
+                            .background(Color(red: 0.72, green: 0.91, blue: 0.97))
+                            //.frame(maxWidth: .infinity, alignment: .leading)
 
+                    }
+                  .background(Color(red: 0.72, green: 0.91, blue: 0.97))
+                  .cornerRadius(20)
+                }
                 Spacer()
             }
-            .padding()
+            .padding(25)
         }
         .frame(minWidth: 450, minHeight: 300)
     }
-
-    // …chooseDirectory() & Rust FFI unchanged…
 
     private func chooseDirectory() {
         let panel = NSOpenPanel()
@@ -119,10 +108,12 @@ struct ContentView: View {
     //  Rust FFI helpers
     // -------------------------------------------------
     private func callRustReport(for path: String) -> String {
-       
+        
+        let dylib = "libmfdf.dylib"
+        
         let ffiHandle: UnsafeMutableRawPointer? = {
-            guard let h = dlopen("libmfdf_ffi.dylib", RTLD_NOW) else {
-                fatalError("Could not open libmfdf_ffi.dylib")
+            guard let h = dlopen(dylib, RTLD_NOW) else {
+                fatalError("Could not open mfdf dylib")
             }
             return h
         }()
@@ -155,4 +146,5 @@ struct ContentView: View {
         // 3. Copy into Swift string
         return String(cString: reportCString)
     }
+    
 }

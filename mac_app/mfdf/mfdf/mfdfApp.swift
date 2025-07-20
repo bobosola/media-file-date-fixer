@@ -2,7 +2,7 @@
 //  mfdfApp.swift
 //  mfdf
 //
-//  Created by Robert Osola on 19/07/2025.
+//  Created by Bob Osola on 19/07/2025.
 //
 
 import SwiftUI

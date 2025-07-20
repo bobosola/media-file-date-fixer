@@ -1,18 +1,20 @@
 #!/opt/homebrew/bin/bash
 
-# Build a Universal 64 bit binary for Macs
+# Builds a single fat binary dylib containing the ARM & Intel
+# dylibs and copies it to the Mac folder for use in XCode
 
-# Build for ARM64 macOS (11.0+, Big Sur+)
+# Build for ARM64 macOS
 cargo build --target=aarch64-apple-darwin --release
 
-# Build for intel 64-bit macOS (10.7+, Lion+)
+# Build for Intel 64-bit macOS
 cargo build --target=x86_64-apple-darwin --release
 
-# Create the "fat binary" from the builds
-# NB: the directories below must all exist!
-lipo -create -output target/universal/mfdf \
-target/aarch64-apple-darwin/release/mfdf \
-target/x86_64-apple-darwin/release/mfdf
+# Create the "fat binary" dylib - NB: target dir must exist!
+lipo \
+target/aarch64-apple-darwin/release/libmfdf_ffi.dylib \
+target/x86_64-apple-darwin/release/libmfdf_ffi.dylib \
+-output mac_app/mfdf/mfdf/libmfdf.dylib -create
 
-# Check the fat binary contains both executables
-file target/universal/mfdf
+# Optional: check the fat dylib contains both architectures
+# (should return: x86_64 arm64)
+lipo -archs mac_app/mfdf/mfdf/libmfdf.dylib

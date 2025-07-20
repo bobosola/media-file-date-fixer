@@ -28,14 +28,14 @@ pub extern "C" fn make_report(raw_path: *const c_char) -> *mut c_char {
          examined: {}\n\
          ignored: {}\n\
          updated: {}\n\
-         errors: {}\n",
-        path, report.examined, report.ignored, report.updated, report.errors
+         failed: {}\n",
+        path, report.examined, report.ignored, report.updated, report.failed
     );
 
     let mut full_report = report_string;
 
     if !report.err_msgs.is_empty() {
-        full_report.push_str("\nerror details:\n");
+        full_report.push_str("\nfailure details:\n");
         full_report.push_str(&report.err_msgs.join("\n"));
     }
 

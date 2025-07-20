@@ -13,7 +13,7 @@ pub struct Report {
     pub examined: i32,
     pub updated: i32,
     pub ignored: i32,
-    pub errors: i32,
+    pub failed: i32,
     pub err_msgs: Vec<String>
 }
 impl Default for Report {
@@ -22,7 +22,7 @@ impl Default for Report {
             examined: 0,
             updated: 0,
             ignored: 0,
-            errors: 0,
+            failed: 0,
             err_msgs: vec![]
         }
     }
@@ -93,7 +93,7 @@ pub fn fix_dates(dir_path: &Path) -> Report {
                 let metadata = match entry.metadata() {
                     Ok(metadata) => metadata,
                     Err(e) => {
-                        report.errors += 1;
+                        report.failed += 1;
                         report.err_msgs.push(format!("{} in '{}'", e, &relative_path));
                         continue;
                      }
@@ -115,7 +115,7 @@ pub fn fix_dates(dir_path: &Path) -> Report {
                      match update_file(entry.path(), parser) {
                          Ok(_) => report.updated +=1,
                          Err(e) => {
-                             report.errors += 1;
+                             report.failed += 1;
                              report.err_msgs.push(format!("{} in '{}'", e, relative_path));
                          }
                      }
@@ -123,7 +123,7 @@ pub fn fix_dates(dir_path: &Path) -> Report {
              },
              // walkdir OS errors (e.g. the path does not exist)
              Err(e) => {
-                 report.errors += 1;
+                 report.failed += 1;
                  report.err_msgs.push(e.to_string());
              }
          }
@@ -132,15 +132,17 @@ pub fn fix_dates(dir_path: &Path) -> Report {
  }
 
 // Check if the file extension indicates a supported media file
+// as per https://github.com/mindeng/nom-exif
 fn is_supported_media_file(file_path: &Path) -> bool {
     if let Some(ext) = file_path.extension() {
         if let Some(ext_str) = ext.to_str() {
             let ext_lower = ext_str.to_lowercase();
             return matches!(
                 ext_lower.as_str(),
-                "jpg" | "jpeg" | "tiff" | "tif" | "heic" | "heif" |
-                "raf" | "png" | "gif" | "bmp" | "webp" |
-                "mp4" | "mov" | "3gp" | "webm" | "mkv" | "mka" | "avi" | "mts"
+                | "heic" | "heif" | "jpg" | "jpeg"
+                | "tiff" | "tif"  | "iiq" | "raf"
+                | "mp4"  | "mov"  | "3gp" | "webm"
+                | "mkv"  | "mka"
             );
         }
     }
