@@ -1,12 +1,14 @@
-# Media File Date Fixer
+# Media File Date Fixer (mfdf)
 
 mfdf restores lost Created and Modfied dates in most popular photo and video files after copying media files from SD cards, tablets, phones, etc. It uses [nom-exif](https://github.com/mindeng/nom-exif), so go there to see the currently supported file types.
 
-The code consists of Rust library with simple MacOS and Windows front end applications. There is also a Rust command line app which can be built thus:
+The code consists of a Rust library with simple MacOS and Windows front end applications. There is also a Rust command line app which can be built thus:
 
-`git clone https://github.com/bobosola/media-file-date-fixer
+```
+git clone https://github.com/bobosola/media-file-date-fixer
 cd media-file-date-fixer
-cargo build --release`
+cargo build --release
+```
 
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` in Windows). It takes a directory path as its single argument, e.g.
 `./mfdf /Users/bob/myvideos`
