@@ -1,17 +1,17 @@
 # Media File Date Fixer
 
-A common problem when copying media files from mixed sources (typically files on SD cards in cameras, action cams, drones etc.) is that the original `Created` and `Modified` dates are overwritten on the copied files. This results in the copied files all showing the date and time when the copying was done, thus making it impossible to order them by date in a single directory for sequential viewing or editing. And because each file type usually has a different naming convention, a mixed file collection ordered by file names is no help. This repo fixes that problem for the file formats listed below:
+mfdf restores lost Created and Modfied dates in most popular photo and video files after copying media files from SD cards, tablets, phones, etc. It uses [nom-exif](https://github.com/mindeng/nom-exif), so go there to see the currently supported file types.
 
-- Image
-  - *.heic, *.heif, etc.
-  - *.jpg, *.jpeg
-  - *.tiff, *.tif
-  - *.RAF (Fujifilm RAW)
-- Video/Audio
-  - ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp, etc.
-  - Matroska based file format: *.webm, *.mkv, *.mka, etc.
+The code consists of Rust library with simple MacOS and Windows front end applications. There is also a Rust command line app which can be built thus:
 
-The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the copied file's system dates. It can retrieve the `Created` and `Modified` dates for images, but only the `Created` date for videos.
+`git clone https://github.com/bobosola/media-file-date-fixer
+cd media-file-date-fixer
+cargo build --release`
+
+The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` in Windows). It takes a directory path as its single argument, e.g.
+`./mfdf /Users/bob/myvideos`
+
+The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the file's system dates. It can retrieve the `Created` and `Modified` dates for images, but only the `Created` date for videos because that is not available in video metadata.
 
 OS support for altering dates in code looks like this:
 - MacOS: `Created` and `Modified`
@@ -22,9 +22,7 @@ So Macs and Windows happily accept the corrected dates. But there's an obvious p
 
 On completion, the code returns a summary report containing:
 - a count of the total number of files examined
-- a count of the files where one or both of the dates were updated
-- a count of files with errors (unsupported file types, permission problems, or files with missing or damaged metadata)
+- a count of the files in which the dates were updated
+- a count of ignored files based on unsupported file suffixes
+- a count of files with errors (permission problems or missing or partial metadata)
 - an errors list with error descriptions and the file paths of the problem files
-
-> [!TIP]
-> File metadata can be missing from processed media files (i.e. downloaded from social media sites or after editing in software), so this code is most effective when working with files which have been copied directly off a camera.
