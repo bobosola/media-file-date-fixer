@@ -14,6 +14,4 @@ The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe
 
 The code recursively scans a directory containing supported media files. It retrieves metadata from each file, and uses that data to update the file's `Created` and `Modified` dates. It can retrieve both the `Created` and `Modified` dates for images, but only the `Created` date for videos because that is not available in video metadata. So for videos, the `Created` date is also used to populate the `Modified` date (there is usually no significant difference between them anyway).
 
-Note that Linux only supports altering the `Modified` date only ([more details here](https://www.figuiere.net/technotes/notes/tn005/)).
-
-On completion, the code returns a summary report of successes, failures and errors.
+Note that Linux only supports altering the `Modified` date only ([more details here](https://www.figuiere.net/technotes/notes/tn005/)). On completion, the code returns a summary report of successes, failures and errors.
