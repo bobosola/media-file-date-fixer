@@ -23,9 +23,7 @@ The 3 app types are functionally equivalent. They all recursively scan the chose
 - Photos: `Created` and `Modfied` dates
 - Videos: `Created` date (because a `Modified` date is not recorded in video metadata)
 
-The apps then use that data to update the file's OS `Created` and/or `Modified` dates accordingly.
-
-OS support for altering dates in code looks like this:
+The apps then use that data to update the file's OS `Created` and/or `Modified` dates accordingly. OS support for altering dates in code looks like this:
 - MacOS & Windows: `Created` and `Modified`
 - Other Unix-like: `Modified` only
 
