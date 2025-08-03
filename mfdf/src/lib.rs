@@ -42,6 +42,7 @@ impl Default for DateTimes {
     }
 }
 
+// Custom error type
 #[derive(Debug)]
 enum DateFixError {
     MissingDates,
@@ -49,7 +50,6 @@ enum DateFixError {
     IoError(std::io::Error),
     ParseError(String),
 }
-
 impl fmt::Display for DateFixError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -60,15 +60,12 @@ impl fmt::Display for DateFixError {
         }
     }
 }
-
 impl Error for DateFixError {}
-
 impl From<std::io::Error> for DateFixError {
     fn from(error: std::io::Error) -> Self {
         DateFixError::IoError(error)
     }
 }
-
 impl From<nom_exif::Error> for DateFixError {
     fn from(error: nom_exif::Error) -> Self {
         DateFixError::ParseError(error.to_string())
@@ -106,7 +103,7 @@ pub fn fix_dates(dir_path: &Path) -> Report {
                  report.examined += 1;
 
                  // Skip probable non-media or unsupported file types by checking the file
-                 // extension to avoid unnecessary parsing
+                 // extension first in order to avoid unnecessary parsing work
                  if !is_supported_media_file(entry.path()) {
                     report.ignored +=1;
                  }
@@ -131,8 +128,8 @@ pub fn fix_dates(dir_path: &Path) -> Report {
      report
  }
 
-// Check if the file extension indicates a supported media file
-// as per https://github.com/mindeng/nom-exif
+/// Check if the file extension indicates a supported media file
+/// as per https://github.com/mindeng/nom-exif
 fn is_supported_media_file(file_path: &Path) -> bool {
     if let Some(ext) = file_path.extension() {
         if let Some(ext_str) = ext.to_str() {
@@ -149,8 +146,8 @@ fn is_supported_media_file(file_path: &Path) -> bool {
     false
 }
 
-/// Parses a file to determine if it has suitable image or video metadata
-/// then uses the found metadata to update the file dates(s)
+/// Parses a file to determine if it contains suitable image or video metadata
+/// then uses the found metadata to update the OS file dates(s)
 fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Result<(), DateFixError> {
 
     let mut datetimes = DateTimes::default();
@@ -164,54 +161,52 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
         datetimes.modified_date = get_image_date(ExifTag::ModifyDate, &exif);
     }
     else if ms.has_track() {
-        // Similar process for video files, but only the Created date is available
+        // Similar process for video files, but only the Created date is available.
         // ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp
         // or Matroska-based file format: .webm, *.mkv, *.mka
         let info: TrackInfo = parser.parse(ms)?;
         datetimes.created_date = get_video_date(TrackInfoTag::CreateDate, &info);
     }
     else {
+        // No metadata of any sort could be found
         return Err(DateFixError::MissingMetadata);
     }
 
+    // Got metadata of some sort, but no dates in it
     if datetimes.created_date.is_none() && datetimes.modified_date.is_none() {
         return Err(DateFixError::MissingDates);
     }
 
+    // We should now have one or both dates, so use the found dates to amemd the file's OS dates
     let file_to_amend = File::options().write(true).open(file_path)?;
 
-    // 'Created' dates on Unix-like systems (other than MacOS) are a big nasty mess. They either have
-    // none at all, or they might have non-POSIX extensions which record a 'Created' date, but under
-    // differing names under differing systems, none of which can be changed via an API.
-    // See https://www.figuiere.net/technotes/notes/tn005/.
-    // But we can alter the 'Modified' date.
-
+    // Changing Created dates requires OS-specific code for Mac & Windows, and cannot be changed at
+    // all on Unix-like systems
     cfg_if::cfg_if! {
         if #[cfg(target_os="macos")] {
-            // MacOS supports changing the 'Created' date
             use std::os::macos::fs::FileTimesExt;
             if let Some(created) = datetimes.created_date {
                 file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
             }
         }
-        else if #[cfg(target_os="windows")] {
-            // Windows supports changing the 'Created' date
+     else if #[cfg(target_os="windows")] {
             use std::os::windows::fs::FileTimesExt;
             if let Some(created) = datetimes.created_date {
                 file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
             }
         }
         else {
-            // Other Unix-like systems don't have editable 'Created' dates. So, given that we cannot
-            // obtain 'Modified' dates for video files, we will insert the metadata 'Created' date
-            // into the 'Modified' date for these systems. Not ideal, but better
-            // than having no original camera dates at all!
+            // Other systems don't have editable 'Created' dates. So, given that we can only
+            // obtain 'Created' dates for video files, we will insert the metadata 'Created' date
+            // into the 'Modified' date just for these systems. Not ideal, but better
+            // than having no original camera dates at all
             if datetimes.created_date.is_some() && !datetimes.modified_date.is_some(){
                 datetimes.modified_date = datetimes.created_date;
             }
         }
     }
-    // All systems support changing the 'Modified' date without needing OS-specific extensions
+
+    // All systems support changing the 'Modified' date
     if let Some(modified) = datetimes.modified_date {
         file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(modified)))?;
     }
@@ -219,8 +214,8 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
     Ok(())
 }
 
-// Skip hidden files and directories on Unix-like systems
-// from https://docs.rs/walkdir/latest/walkdir/
+/// Skip hidden files and directories on Unix-like systems
+/// from https://docs.rs/walkdir/latest/walkdir/
 fn is_hidden(entry: &DirEntry) -> bool {
     entry.file_name()
         .to_str()
@@ -228,8 +223,8 @@ fn is_hidden(entry: &DirEntry) -> bool {
         .unwrap_or(false)
 }
 
-// Try to get the file path relative to the top level directory.
-// Defaults to the full file path on failure.
+/// Try to get the file path relative to the top level directory.
+/// Defaults to the full file path on failure.
 fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
     let full_file_path = entry.path().to_path_buf();
     match diff_paths(&full_file_path, dir_path) {
@@ -238,7 +233,7 @@ fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
     }
 }
 
-// Try to convert an image Exif tag to a DateTime
+/// Try to convert an image Exif tag to a DateTime
 fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = exif.get(tag) {
         if let Some(dt) = tag.as_time() {
@@ -248,7 +243,7 @@ fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     None
 }
 
-// Try to convert a video metadata tag to a DateTime
+/// Try to convert a video metadata tag to a DateTime
 fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = info.get(tag) {
         if let Some(dt) = tag.as_time() {
