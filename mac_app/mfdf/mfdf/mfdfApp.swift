@@ -11,7 +11,7 @@ import SwiftUI
 struct mfdfApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().navigationTitle(Text("Media File Date Fixer (mfdf)"))
         }
     }
 }

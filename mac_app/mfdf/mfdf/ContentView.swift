@@ -10,7 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var introHidden = false
     @State private var report = ""
-
+    @State private var showProgress = false
+    
     var body: some View {
         ZStack {
             
@@ -27,22 +28,27 @@ struct ContentView: View {
             // Foreground stack content on top
             VStack(alignment: .center) {
                 
+                if showProgress {
+                    ProgressView("working...")
+                }
+                   
                 Button("Choose Directory…") {
                     chooseDirectory()
                 }
                 .buttonStyle(.borderedProminent)
-                .padding(10)
+                .padding(20)
+                .font(.system(size: 16))
                 
                 if !introHidden {
                     let introText = """
-                        This app can recover:  
+                        mfdf can recover:  
                         • the *Created* & *Modified* dates for heic, heif, jpg, tif, iiq & raf files
                         • the *Created* dates for mp4, mov, 3gp, webm, mkv & mka video files
                         
-                        It fixes the supported file dates in your chosen directory plus any  
-                        subdirectories. All other files are ignored.
+                        It fixes the dates in your chosen directory plus any subdirectories.
+                        All other files are ignored.
                         
-                        More details at the [app website](https://osola.org.uk/utils)
+                        More details at the [app website](https://mfdf.osola.org.uk)
                         """
                     
                     let attributed = try! AttributedString(
@@ -54,7 +60,7 @@ struct ContentView: View {
                     )
                     Text(attributed)
                         .padding(25)
-                        .font(.body)
+                        .font(.system(size: 16, weight: Font.Weight.medium))
                         .background(Color(red: 0.72, green: 0.91, blue: 0.97))
                         .cornerRadius(20)
                 }
@@ -63,11 +69,9 @@ struct ContentView: View {
                     ScrollView {
                         Text(report)
                             .padding(25)
-                            .font(.body)
+                            .font(.system(size: 14, weight: Font.Weight.medium))
                             .textSelection(.enabled)
                             .background(Color(red: 0.72, green: 0.91, blue: 0.97))
-                            //.frame(maxWidth: .infinity, alignment: .leading)
-
                     }
                   .background(Color(red: 0.72, green: 0.91, blue: 0.97))
                   .cornerRadius(20)
@@ -96,10 +100,12 @@ struct ContentView: View {
             defer { url.stopAccessingSecurityScopedResource() }
 
             // 2. Now the Rust library may write inside that directory
+            showProgress = true
             let reportText = callRustReport(for: url.path)
             DispatchQueue.main.async {
                 self.report = reportText
                 self.introHidden = true
+                showProgress = false
             }
         }
     }
@@ -146,5 +152,4 @@ struct ContentView: View {
         // 3. Copy into Swift string
         return String(cString: reportCString)
     }
-    
 }
