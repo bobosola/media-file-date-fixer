@@ -16,6 +16,7 @@ Cargo.lock
 
 # Project specific
 win_app/mfdf/mfdf_ffi.dll
+mac_app/mfdf/mfdf/libmfdf.dylib
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio
