@@ -7,6 +7,9 @@ The repo consists of a Rust library with:
 * a simple Windows (C# WinUI 3) front end
 * a command line app for systems which support Rust
 
+See the [mfdf website](a href="https://mfdf.osola.org.uk") for more information and details of how to download
+installable binaries for MacOS and Windows.
+
 Build the command line app like this:
 1. [Install Rust](https://www.rust-lang.org/tools/install)
 2. `git clone https://github.com/bobosola/media-file-date-fixer`
