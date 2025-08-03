@@ -5,9 +5,9 @@
 The repo consists of a Rust library with:
 * a simple MacOS (Swift) front end
 * a simple Windows (C# WinUI 3) front end
-* a command line version for systems which support Rust
+* a command line app for systems which support Rust
 
-Build the command line version like this:
+Build the command line app like this:
 1. [Install Rust](https://www.rust-lang.org/tools/install)
 2. `git clone https://github.com/bobosola/media-file-date-fixer`
 3. `cd media-file-date-fixer`
