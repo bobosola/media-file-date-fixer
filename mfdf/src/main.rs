@@ -4,7 +4,6 @@ use mfdf::fix_dates;
 // Simple runner for the media_file_date_fixer library
 fn main() {
     let args: Vec<String> = env::args().collect();
-
     match args.len() {
         1 => {
             print_help();
