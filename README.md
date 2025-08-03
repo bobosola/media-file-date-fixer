@@ -2,10 +2,11 @@
 
 **mfdf** restores lost Created and Modfied dates in most popular photo and video files. These dates often get overwritten when copying files around from SD cards, tablets, and phones. Running mfdf on a directory of copied media files will restore one or both of the original dates of all the supported files types, including files in any subdirectories. The code uses [nom-exif](https://github.com/mindeng/nom-exif), so check there to see the currently supported file types.
 
-The repo consists of a Rust library with:
-* a simple MacOS (Swift) front end
-* a simple Windows (C# WinUI 3) front end
+The repo consists of:
+* a Rust library containing the core logic
 * a command line app for systems which support Rust
+* a MacOS (Swift) front end (see README in /mac_app for how to build)
+* a Windows (C# WinUI 3) front end (see README in /win_app for how to build)
 
 See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
 installable binaries for MacOS and Windows.
