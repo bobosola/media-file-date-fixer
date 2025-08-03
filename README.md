@@ -19,12 +19,16 @@ Build the command line app like this:
 
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument, e.g. `./mfdf /Users/bob/myvideos`
 
-The 3 app types are functionally equivalent. They all recursively scan the chosen directory and attempt to retrieve metadata from each supported file type. They then use that data to update the file's OS `Created` and/or `Modified` dates. Note that for video files, only the `Created` date is retrieved because `Modified` dates are not recorded in video metadata.
+The 3 app types are functionally equivalent. They all recursively scan the chosen directory and attempt to retrieve metadata from each supported file type. The dates retrieved are as follows:
+- Photos: `Created` and `Modfied` dates
+- Videos: `Created` date (because a `Modified` date is not recorded in video metadata)
+
+The apps then use that data to update the file's OS `Created` and/or `Modified` dates accordingly.
 
 OS support for altering dates in code looks like this:
 - MacOS & Windows: `Created` and `Modified`
 - Other Unix-like: `Modified` only
 
-Other unix-like systems only support altering the `Modified` date because the Created date, known as btime (birth time) is strictly read-only, and may even not exist on some old versions. So for video files on these systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential small difference between the two dates anyway, and either metadata date is better than having just the (useless) date of the copy operation.
+Other unix-like systems only support altering the `Modified` date because the `Created date`, known as `btime` (birth time) is strictly read-only, and may even not exist on some old versions. So for video files on these systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential small difference between the two dates anyway, and any metadata date is better than having just the (useless) date of the copy operation.
 
 On completion, the code returns a summary report containing a count of successes, ignored files, and any errors.
