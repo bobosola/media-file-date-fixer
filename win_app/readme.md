@@ -4,9 +4,10 @@ Build requirements:
 - Visual Studio 2022
 - Rust 2024 (v1.85.0 or higher)
 
-This is a Visual Studio 2022 WinUI 3 desktop app solution in C#. It requires the `mfdf_ffi.dll` which can be built by running the appropriate batch file below.
+This is a Visual Studio 2022 WinUI 3 desktop app solution in C#. It requires the `mfdf_ffi.dll` to be
+built in Rust. Once Rust is installed, the DLL can be be built by running the appropriate batch file below.
 
-**NB: You will need to alter the path for PROJECT_DIR before running the batch files**
+**NB: You will need to alter PROJECT_DIR to your local path before running the batch files**
 
 The batch files will build the following:
 * mfdf_ffl.dll: a Win64 DLL version of the library
