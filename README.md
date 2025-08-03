@@ -5,8 +5,8 @@
 The repo consists of:
 * a Rust library containing the core logic
 * a command line app for systems which support Rust
-* a MacOS (Swift) front end (see README in /mac_app for how to build)
-* a Windows (C# WinUI 3) front end (see README in /win_app for how to build)
+* a MacOS (Swift) front end (see README in [/mac_app](https://github.com/bobosola/media-file-date-fixer/tree/main/mac_app) for how to build)
+* a Windows (C# WinUI 3) front end (see README in [/win_app](https://github.com/bobosola/media-file-date-fixer/tree/main/win_app) for how to build)
 
 See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
 installable binaries for MacOS and Windows.
