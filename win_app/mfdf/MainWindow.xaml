@@ -32,25 +32,20 @@
             </Grid.RowDefinitions>
 
             <!--Margin is left, top, right, bottom -->
-            <RichTextBlock x:Name="IntroText" Margin="20">
+            <RichTextBlock x:Name="IntroText" Margin="20" FontSize="16">
                 <Paragraph>
-                    This app can recover: <LineBreak /> 
+                    mfdf can recover: <LineBreak /> 
                     • the <Italic>Created</Italic> and <Italic>Modified</Italic> dates for common image file types
                     <LineBreak />
                     • the <Italic>Created</Italic> date for common video file types
                     <LineBreak />
                     <LineBreak />
-                    It fixes all the supported file types in your chosen directory plus any
+                    It fixes the dates in your chosen directory plus any subdirectories.
                     <LineBreak />
-                    subdirectories. All other file types are ignored.
-                    <LineBreak />
-                    <LineBreak />
-                    NB: files downloaded from social media often have their metadata removed
-                    <LineBreak />
-                    for privacy reasons, so dates usually cannot be recoved for such files.
+                    All other file types are ignored.
                     <LineBreak />
                     <LineBreak />
-                    More details on the <Hyperlink NavigateUri="https://osola.org.uk/utils">app website</Hyperlink> .     
+                    More details on the <Hyperlink NavigateUri="https://mfdf.osola.org.uk">app website</Hyperlink> .     
                 </Paragraph>
             </RichTextBlock>
 
@@ -60,7 +55,7 @@
                     Background="#CCF9C7"
                     Grid.Row="1"/>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2" Margin="20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2" Margin="20" FontSize="14">
                 <!-- Allow 16px for scrollbar-->
                 <TextBlock x:Name="ResultText" TextWrapping="Wrap" Margin="15,15,31,15" Visibility="Collapsed" />
             </ScrollViewer>
