@@ -11,11 +11,10 @@ The repo consists of:
 See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
 installable binaries for MacOS and Windows.
 
-Build the command line app like this:
-1. [Install Rust](https://www.rust-lang.org/tools/install)
-2. `git clone https://github.com/bobosola/media-file-date-fixer`
-3. `cd media-file-date-fixer`
-4. `cargo build --release`
+To build the command line, you will need to have [Rust](https://www.rust-lang.org/tools/install) and [Git](https://git-scm.com) installed. Then do this:
+1. `git clone https://github.com/bobosola/media-file-date-fixer`
+2. `cd media-file-date-fixer`
+3. `cargo build --release`
 
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument, e.g. `./mfdf /Users/bob/myvideos`
 
