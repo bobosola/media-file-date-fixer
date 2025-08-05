@@ -11,7 +11,7 @@ The repo consists of:
 See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
 installable binaries for MacOS and Windows.
 
-To build the command line, you will need to have [Rust](https://www.rust-lang.org/tools/install) and [Git](https://git-scm.com) installed. Then do this:
+To build the command line app, you will need to have [Rust](https://www.rust-lang.org/tools/install) and [Git](https://git-scm.com) installed. Then do this:
 1. `git clone https://github.com/bobosola/media-file-date-fixer`
 2. `cd media-file-date-fixer`
 3. `cargo build --release`
