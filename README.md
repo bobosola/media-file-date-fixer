@@ -28,4 +28,5 @@ The apps then use that data to update the file's OS `Created` and/or `Modified` 
 
 Other unix-like systems only support altering the `Modified` date because the `Created` date, known as `btime` (birth time), is strictly read-only and may even not exist on some old versions. So for video files on these systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential small difference between the two dates anyway, and any metadata date is better than having just the (useless) date of the copy operation.
 
-On completion, the code returns a summary report string containing a count of successes, ignored files, and any errors.
+On completion, the code returns a summary report string containing a count of the number of files examined, a count of the number of
+files updated, and a count of failed files. If the count of failed files is greater than zero, the details of each failed file are listed.
