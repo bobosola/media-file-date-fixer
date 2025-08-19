@@ -23,21 +23,15 @@ fn main() {
     }
 
     let dir_path = Path::new(&args[1]);
-
-    if !dir_path.exists() {
-        eprintln!("Error: Directory '{}' does not exist", dir_path.display());
+    if dir_path.exists() && dir_path.is_dir(){
+        println!("Processing files in: {}", dir_path.display());
+        let report = fix_dates(dir_path);
+        print_report(&report, dir_path);
+    }
+    else {
+        eprintln!("Error: '{}' is not a directory or cannot be accessed", dir_path.display());
         exit(1);
     }
-
-    if !dir_path.is_dir() {
-        eprintln!("Error: '{}' is not a directory", dir_path.display());
-        exit(1);
-    }
-
-    println!("Processing files in: {}", dir_path.display());
-    let report = fix_dates(dir_path);
-
-    print_report(&report, dir_path);
 }
 
 fn print_help() {
@@ -61,12 +55,11 @@ fn print_report(report: &mfdf::Report, dir_path: &Path) {
     println!();
     println!("mfdf report for files in: {}", dir_path.display());
     println!("  examined: {}", report.examined);
-    println!("  ignored:  {}", report.ignored);
     println!("  updated:  {}", report.updated);
-    println!("  errors:   {}", report.failed);
+    println!("  failed:   {}", report.failed);
 
     if !report.err_msgs.is_empty() {
-        println!("\nerror details:");
+        println!("\nfailure details:");
         for (i, error_msg) in report.err_msgs.iter().enumerate() {
             println!("  {}. {}", i + 1, error_msg);
         }

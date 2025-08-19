@@ -12,7 +12,6 @@ use chrono:: {DateTime, FixedOffset };
 pub struct Report {
     pub examined: i32,
     pub updated: i32,
-    pub ignored: i32,
     pub failed: i32,
     pub err_msgs: Vec<String>
 }
@@ -21,7 +20,6 @@ impl Default for Report {
         return Report {
             examined: 0,
             updated: 0,
-            ignored: 0,
             failed: 0,
             err_msgs: vec![]
         }
@@ -100,23 +98,15 @@ pub fn fix_dates(dir_path: &Path) -> Report {
                  if metadata.is_dir() {
                      continue;
                  }
-                 report.examined += 1;
+                report.examined += 1;
 
-                 // Skip probable non-media or unsupported file types by checking the file
-                 // extension first in order to avoid unnecessary parsing work
-                 if !is_supported_media_file(entry.path()) {
-                    report.ignored +=1;
-                 }
-                 else {
-                     // These look like supported media files, so try to parse for image/video metadata
-                     match update_file(entry.path(), parser) {
-                         Ok(_) => report.updated +=1,
-                         Err(e) => {
-                             report.failed += 1;
-                             report.err_msgs.push(format!("{} in '{}'", e, relative_path));
-                         }
-                     }
-                 }
+                match update_file(entry.path(), parser) {
+                    Ok(_) => report.updated +=1,
+                    Err(e) => {
+                        report.failed += 1;
+                        report.err_msgs.push(format!("{} in '{}'", e, relative_path));
+                    }
+                }
              },
              // walkdir OS errors (e.g. the path does not exist)
              Err(e) => {
@@ -127,24 +117,6 @@ pub fn fix_dates(dir_path: &Path) -> Report {
      }
      report
  }
-
-/// Check if the file extension indicates a supported media file
-/// as per https://github.com/mindeng/nom-exif
-fn is_supported_media_file(file_path: &Path) -> bool {
-    if let Some(ext) = file_path.extension() {
-        if let Some(ext_str) = ext.to_str() {
-            let ext_lower = ext_str.to_lowercase();
-            return matches!(
-                ext_lower.as_str(),
-                | "heic" | "heif" | "jpg" | "jpeg"
-                | "tiff" | "tif"  | "iiq" | "raf"
-                | "mp4"  | "mov"  | "3gp" | "webm"
-                | "mkv"  | "mka"
-            );
-        }
-    }
-    false
-}
 
 /// Parses a file to determine if it contains suitable image or video metadata
 /// then uses the found metadata to update the OS file dates(s)
