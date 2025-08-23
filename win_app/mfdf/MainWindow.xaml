@@ -35,15 +35,12 @@
             <RichTextBlock x:Name="IntroText" Margin="20" FontSize="16">
                 <Paragraph>
                     mfdf can recover: <LineBreak /> 
-                    • the <Italic>Created</Italic> and <Italic>Modified</Italic> dates for common image file types
+                    • the <Italic>Created</Italic> and <Italic>Modified</Italic> dates for most image files
                     <LineBreak />
-                    • the <Italic>Created</Italic> date for common video file types
+                    • the <Italic>Created</Italic> date for most video files
                     <LineBreak />
                     <LineBreak />
-                    It fixes the dates in your chosen directory plus any subdirectories.
-                    <LineBreak />
-                    All other file types are ignored.
-                    <LineBreak />
+                    It works best for media files copied directly from a camera.
                     <LineBreak />
                     More details on the <Hyperlink NavigateUri="https://mfdf.osola.org.uk">app website</Hyperlink> .     
                 </Paragraph>
