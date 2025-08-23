@@ -42,12 +42,9 @@ struct ContentView: View {
                 if !introHidden {
                     let introText = """
                         mfdf can recover:  
-                        • the *Created* & *Modified* dates for heic, heif, jpg, tif, iiq & raf files
-                        • the *Created* dates for mp4, mov, 3gp, webm, mkv & mka video files
-                        
-                        It fixes the dates in your chosen directory plus any subdirectories.
-                        All other files are ignored.
-                        
+                        • the *Created* & *Modified* dates for most image files
+                        • the *Created* dates for most video files
+                        It works best for media files copied directly from a camera.
                         More details at the [app website](https://mfdf.osola.org.uk)
                         """
                     
