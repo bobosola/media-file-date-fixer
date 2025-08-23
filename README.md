@@ -1,6 +1,6 @@
 # Media File Date Fixer (mfdf)
 
-**mfdf** restores lost Created and Modfied dates in most popular photo and video files. These dates often get overwritten when copying files around from SD cards, tablets, and phones. Running mfdf on a directory of copied media files will restore one or both of the original dates of all the supported files types, including files in any subdirectories. The code uses [nom-exif](https://github.com/mindeng/nom-exif), so check there to see the currently supported file types.
+**mfdf** restores lost Created and Modified dates in most popular photo and video files. These dates often get overwritten when copying files around from SD cards, tablets, and phones. Running mfdf on a directory of copied media files will restore one or both of the original dates of all the supported files types, including files in any subdirectories. The code uses [nom-exif](https://github.com/mindeng/nom-exif), so check there to see the currently supported file types.
 
 The repo consists of:
 * a Rust library containing the core logic
@@ -11,11 +11,10 @@ The repo consists of:
 See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
 installable binaries for MacOS and Windows.
 
-Build the command line app like this:
-1. [Install Rust](https://www.rust-lang.org/tools/install)
-2. `git clone https://github.com/bobosola/media-file-date-fixer`
-3. `cd media-file-date-fixer`
-4. `cargo build --release`
+To build the command line app, you will need to have [Rust](https://www.rust-lang.org/tools/install) and [Git](https://git-scm.com) installed. Then do this:
+1. `git clone https://github.com/bobosola/media-file-date-fixer`
+2. `cd media-file-date-fixer`
+3. `cargo build --release`
 
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument, e.g. `./mfdf /Users/bob/myvideos`
 
@@ -29,4 +28,5 @@ The apps then use that data to update the file's OS `Created` and/or `Modified` 
 
 Other unix-like systems only support altering the `Modified` date because the `Created` date, known as `btime` (birth time), is strictly read-only and may even not exist on some old versions. So for video files on these systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential small difference between the two dates anyway, and any metadata date is better than having just the (useless) date of the copy operation.
 
-On completion, the code returns a summary report string containing a count of successes, ignored files, and any errors.
+On completion, the code returns a summary report string containing a count of the number of files examined, a count of the number of
+files updated, and a count of failed files. If the count of failed files is greater than zero, the details of each failed file are listed.

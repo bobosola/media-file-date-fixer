@@ -14,6 +14,17 @@ Cargo.lock
 .DS_Store
 .zed
 
+# XCode
+*.swp
+*.lock
+*.xcuserstate
+*.xcuserdata
+*.xcscmblueprint
+DerivedData/
+*.moved-aside
+*.xccheckout
+*.playground*
+
 # Project specific
 win_app/mfdf/mfdf_ffi.dll
 mac_app/mfdf/mfdf/libmfdf.dylib
