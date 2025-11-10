@@ -8,9 +8,6 @@ The repo consists of:
 * a MacOS (Swift) front end (see README in `mac_app` for how to build)
 * a Windows (C# WinUI 3) front end (see README in `win_app` for how to build)
 
-See the [mfdf website](https://mfdf.osola.org.uk) for more information and details of how to download
-installable binaries for MacOS and Windows.
-
 To build the command line app, you will need to have [Rust](https://www.rust-lang.org/tools/install) and [Git](https://git-scm.com) installed. Then do this:
 1. `git clone https://github.com/bobosola/media-file-date-fixer`
 2. `cd media-file-date-fixer`
