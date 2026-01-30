@@ -6,7 +6,7 @@ use std::error::Error;
 use walkdir::{ WalkDir, DirEntry };
 use nom_exif::*;
 use pathdiff:: diff_paths;
-use chrono:: {DateTime, FixedOffset };
+use chrono:: {DateTime, FixedOffset, NaiveDateTime, TimeZone};
 
 /// Summary report of application run
 pub struct Report {
@@ -209,7 +209,18 @@ fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
 fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = exif.get(tag) {
         if let Some(dt) = tag.as_time() {
+            // Should normally be standard format with offset, e.g. '2026-01-16T15:29:19+00:00'
             return Some(dt);
+        } else {
+            // but might also be 'naive' date format e.g. '2026-01-16 15:29:19' in local time
+            // as seen in iPhone HEIC images converted to JPG in the iPhone Files app
+            // so we need to convert them to standard format with a zero offset
+            if let Some(naive) = NaiveDateTime::parse_from_str(&tag.to_string(),"%Y-%m-%d %H:%M:%S").ok(){
+                let offset = FixedOffset::east_opt(0).unwrap(); // zero is safe to unwrap
+                if let Some(dt) = offset.from_local_datetime(&naive).single(){
+                    return Some(dt);
+                }      
+            }  
         }
     }
     None
