@@ -1,6 +1,30 @@
 # Media File Date Fixer (mfdf)
 
-**mfdf** restores lost Created and Modified dates in most popular photo and video files. These dates often get overwritten when copying files around from SD cards, tablets, and phones. Running mfdf on a directory of copied media files will restore one or both of the original dates of all the supported files types, including files in any subdirectories. The code uses [nom-exif](https://github.com/mindeng/nom-exif), so check there to see the currently supported file types.
+**mfdf** restores lost `Created` dates in most popular photo and video files. These dates often get overwritten when copying files around from SD cards, tablets, and phones. Running `mfdf` on a directory of copied media files will restore the original `Created` date of all the supported files types, including files in any subdirectories. The code uses [nom-exif](https://github.com/mindeng/nom-exif), so check there to see the currently supported file types.
+
+---
+**Note: 30-Jan-2026 update:** I found a bug in extracting `Created` dates from `MOV` files in `nom-exif` v2.6.0 which I have reported to the author. As a temporary fix I am using a patched version locally by adding this to the project root `Cargo.toml`
+```
+[patch.crates-io]
+nom-exif = { path = "../nom-exif" }
+```
+ and using a local clone of `nom-exif` with the following fix in `src/mov.rs` at around line 144: Change
+```
+    let extras = parse_mvhd_tkhd(moov_body);
+    if entries.contains_key(&TrackInfoTag::CreateDate) {
+        entries.remove(&TrackInfoTag::CreateDate);
+    }
+```
+to
+```
+    let mut extras = parse_mvhd_tkhd(moov_body);
+    if entries.contains_key(&TrackInfoTag::CreateDate) && extras.contains_key(&TrackInfoTag::CreateDate) {
+        extras.remove(&TrackInfoTag::CreateDate);
+    }
+```
+I will remove this section when `nom-exif` is fixed.
+
+---
 
 The repo consists of:
 * a Rust library containing the core logic
@@ -15,15 +39,8 @@ To build the command line app, you will need to have [Rust](https://www.rust-lan
 
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument, e.g. `./mfdf /Users/bob/myvideos`
 
-The 3 app types are functionally equivalent. They all recursively scan the chosen directory and attempt to retrieve metadata from each supported file type. The dates retrieved are as follows:
-- Photos: `Created` and `Modified` dates
-- Videos: `Created` date only (because a `Modified` date is not recorded in video metadata)
+The 3 app types are functionally equivalent. They all recursively scan the chosen directory and attempt to retrieve `Created` date metadata from each supported file type. 
 
-The apps then use that data to update the file's OS `Created` and/or `Modified` dates accordingly. OS support for altering dates in code looks like this:
-- MacOS & Windows: `Created` and `Modified`
-- Other Unix-like: `Modified` only
+**Note:** On Macs and Windows, the apps use the found metadata `Created` date to update the file's OS `Created` date. Other unix-like systems only support altering the `Modified` date. This is because the `Created` date, known as `btime` (birth time), is strictly read-only and may even not exist on some old OS versions. So for files on such systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential difference between the two dates anyway, and any metadata date is better than having just the (useless) date of the copy operation.
 
-Other unix-like systems only support altering the `Modified` date because the `Created` date, known as `btime` (birth time), is strictly read-only and may even not exist on some old versions. So for video files on these systems, the metadata `Created` date is used to update the OS `Modified` date. The rationale here is that for the target use case (copying camera files) no-one cares about a potential small difference between the two dates anyway, and any metadata date is better than having just the (useless) date of the copy operation.
-
-On completion, the code returns a summary report string containing a count of the number of files examined, a count of the number of
-files updated, and a count of failed files. If the count of failed files is greater than zero, the details of each failed file are listed.
+On completion, the code returns a summary report string containing a count of the number of files examined, a count of the number of files updated, and a count of failed files. If the count of failed files is greater than zero, the details of each failed file are listed.

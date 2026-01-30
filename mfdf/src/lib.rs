@@ -130,10 +130,9 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
         let iter: ExifIter = parser.parse(ms)?;
         let exif: Exif = iter.into();
         datetimes.created_date = get_image_date(ExifTag::CreateDate, &exif);
-        datetimes.modified_date = get_image_date(ExifTag::ModifyDate, &exif);
     }
     else if ms.has_track() {
-        // Similar process for video files, but only the Created date is available.
+        // Similar process for video files
         // ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp
         // or Matroska-based file format: .webm, *.mkv, *.mka
         let info: TrackInfo = parser.parse(ms)?;
@@ -144,12 +143,12 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
         return Err(DateFixError::MissingMetadata);
     }
 
-    // Got metadata of some sort, but no dates in it
-    if datetimes.created_date.is_none() && datetimes.modified_date.is_none() {
+    // Got metadata of some sort, but no created dates in it
+    if datetimes.created_date.is_none() {
         return Err(DateFixError::MissingDates);
     }
 
-    // We should now have one or both dates, so use the found dates to amemd the file's OS dates
+    // Use the found created date to amemd the file's OS dates
     let file_to_amend = File::options().write(true).open(file_path)?;
 
     // Changing Created dates requires OS-specific code for Mac & Windows, and cannot be changed at
@@ -168,21 +167,15 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
             }
         }
         else {
-            // Other systems don't have editable 'Created' dates. So, given that we can only
-            // obtain 'Created' dates for video files, we will insert the metadata 'Created' date
-            // into the 'Modified' date just for these systems. Not ideal, but better
-            // than having no original camera dates at all
-            if datetimes.created_date.is_some() && !datetimes.modified_date.is_some(){
+            // Other systems don't have editable 'Created' dates. So, we will insert the 
+            // metadata 'Created' date into the 'Modified' date just for these systems. 
+            // Not ideal, but better than having no original camera dates at all
+            if datetimes.created_date.is_some() {
                 datetimes.modified_date = datetimes.created_date;
             }
         }
     }
-
-    // All systems support changing the 'Modified' date
-    if let Some(modified) = datetimes.modified_date {
-        file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(modified)))?;
-    }
-
+    
     Ok(())
 }
 
@@ -205,28 +198,23 @@ fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
     }
 }
 
-/// Try to convert an image Exif tag to a DateTime
+
+/// Exif datetimes should be in standard format with offset, e.g. '2026-01-16T15:29:19+00:00'
+/// but they might also be 'naive' date format e.g. '2026-01-16 15:29:19'
+/// as seen in iPhone HEIC images converted to JPG in the iPhone Files app.
+/// So we need to try to convert any 'naive' dates found to standard format
 fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = exif.get(tag) {
-        if let Some(dt) = tag.as_time() {
-            // Should normally be standard format with offset, e.g. '2026-01-16T15:29:19+00:00'
+        if let Some(dt) = tag.as_time() {   
             return Some(dt);
         } else {
-            // but might also be 'naive' date format e.g. '2026-01-16 15:29:19' in local time
-            // as seen in iPhone HEIC images converted to JPG in the iPhone Files app
-            // so we need to convert them to standard format with a zero offset
-            if let Some(naive) = NaiveDateTime::parse_from_str(&tag.to_string(),"%Y-%m-%d %H:%M:%S").ok(){
-                let offset = FixedOffset::east_opt(0).unwrap(); // zero is safe to unwrap
-                if let Some(dt) = offset.from_local_datetime(&naive).single(){
-                    return Some(dt);
-                }      
-            }  
+            return get_dt_from_naive_dt(&tag);
         }
     }
     None
 }
 
-/// Try to convert a video metadata tag to a DateTime
+/// Try to convert a video metadata datetime tag to a DateTime
 fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
     if let Some(tag) = info.get(tag) {
         if let Some(dt) = tag.as_time() {
@@ -234,4 +222,15 @@ fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<Fixed
         }
     }
     None
+}
+
+/// Trys to convert 'naive' datetimes to standard datetimes with offset
+fn get_dt_from_naive_dt(entry: &EntryValue) -> Option<DateTime<FixedOffset>> {
+    if let Some(naive) = NaiveDateTime::parse_from_str(&entry.to_string(),"%Y-%m-%d %H:%M:%S").ok(){
+        let offset = FixedOffset::east_opt(0).unwrap(); // zero is safe to unwrap
+        if let Some(dt) = offset.from_local_datetime(&naive).single(){
+            return Some(dt);
+        }      
+    } 
+   None 
 }
