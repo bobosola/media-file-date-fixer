@@ -7,7 +7,7 @@ edition.workspace = true
 
 [dependencies]
 walkdir = "2.5.0"
-nom-exif = "2.5.4"
-chrono =  { version = "0.4.41", features = ["std"] }
+nom-exif = "2.6.0"
+chrono = "0.4.43"
 pathdiff = "0.2.3"
 cfg-if = "1.0.0"
