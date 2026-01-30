@@ -7,7 +7,7 @@ resolver = "3"
 version = "0.1.0"
 edition = "2024"
 authors = ["Bob Osola <bobosola@gmail.com>"]
-description = "Retrieves media files dates lost during copying from metadata"
+description = "Retrieves media files Created dates lost during copying"
 
 [patch.crates-io]
 nom-exif = { path = "../nom-exif" }
