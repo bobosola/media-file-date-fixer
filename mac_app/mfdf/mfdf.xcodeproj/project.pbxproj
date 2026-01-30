@@ -21,6 +21,20 @@
 			remoteGlobalIDString = 3C0714562E2BCD87004B99E1;
 			remoteInfo = mfdf;
 		};
+		3C744D232F2D145700D4D047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C07144F2E2BCD87004B99E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3C744D152F2D145600D4D047;
+			remoteInfo = "Media File Date Fixer";
+		};
+		3C744D2D2F2D145700D4D047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C07144F2E2BCD87004B99E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3C744D152F2D145600D4D047;
+			remoteInfo = "Media File Date Fixer";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +54,9 @@
 		3C0714572E2BCD87004B99E1 /* mfdf.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mfdf.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C0714652E2BCD87004B99E1 /* mfdfTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mfdfTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C07146F2E2BCD87004B99E1 /* mfdfUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mfdfUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C744D162F2D145600D4D047 /* Media File Date Fixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Media File Date Fixer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C744D222F2D145700D4D047 /* Media File Date FixerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Media File Date FixerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C744D2C2F2D145700D4D047 /* Media File Date FixerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Media File Date FixerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -74,6 +91,21 @@
 			path = mfdfUITests;
 			sourceTree = "<group>";
 		};
+		3C744D172F2D145700D4D047 /* Media File Date Fixer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Media File Date Fixer";
+			sourceTree = "<group>";
+		};
+		3C744D252F2D145700D4D047 /* Media File Date FixerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Media File Date FixerTests";
+			sourceTree = "<group>";
+		};
+		3C744D2F2F2D145700D4D047 /* Media File Date FixerUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Media File Date FixerUITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +130,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3C744D132F2D145600D4D047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D1F2F2D145700D4D047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D292F2D145700D4D047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -107,6 +160,9 @@
 				3C0714592E2BCD87004B99E1 /* mfdf */,
 				3C0714682E2BCD87004B99E1 /* mfdfTests */,
 				3C0714722E2BCD87004B99E1 /* mfdfUITests */,
+				3C744D172F2D145700D4D047 /* Media File Date Fixer */,
+				3C744D252F2D145700D4D047 /* Media File Date FixerTests */,
+				3C744D2F2F2D145700D4D047 /* Media File Date FixerUITests */,
 				3CBC36752E2D7C1C00DF07B5 /* Frameworks */,
 				3C0714582E2BCD87004B99E1 /* Products */,
 			);
@@ -118,6 +174,9 @@
 				3C0714572E2BCD87004B99E1 /* mfdf.app */,
 				3C0714652E2BCD87004B99E1 /* mfdfTests.xctest */,
 				3C07146F2E2BCD87004B99E1 /* mfdfUITests.xctest */,
+				3C744D162F2D145600D4D047 /* Media File Date Fixer.app */,
+				3C744D222F2D145700D4D047 /* Media File Date FixerTests.xctest */,
+				3C744D2C2F2D145700D4D047 /* Media File Date FixerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -201,6 +260,74 @@
 			productReference = 3C07146F2E2BCD87004B99E1 /* mfdfUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		3C744D152F2D145600D4D047 /* Media File Date Fixer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C744D342F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date Fixer" */;
+			buildPhases = (
+				3C744D122F2D145600D4D047 /* Sources */,
+				3C744D132F2D145600D4D047 /* Frameworks */,
+				3C744D142F2D145600D4D047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3C744D172F2D145700D4D047 /* Media File Date Fixer */,
+			);
+			name = "Media File Date Fixer";
+			packageProductDependencies = (
+			);
+			productName = "Media File Date Fixer";
+			productReference = 3C744D162F2D145600D4D047 /* Media File Date Fixer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3C744D212F2D145700D4D047 /* Media File Date FixerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C744D372F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date FixerTests" */;
+			buildPhases = (
+				3C744D1E2F2D145700D4D047 /* Sources */,
+				3C744D1F2F2D145700D4D047 /* Frameworks */,
+				3C744D202F2D145700D4D047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3C744D242F2D145700D4D047 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3C744D252F2D145700D4D047 /* Media File Date FixerTests */,
+			);
+			name = "Media File Date FixerTests";
+			packageProductDependencies = (
+			);
+			productName = "Media File Date FixerTests";
+			productReference = 3C744D222F2D145700D4D047 /* Media File Date FixerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3C744D2B2F2D145700D4D047 /* Media File Date FixerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C744D3A2F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date FixerUITests" */;
+			buildPhases = (
+				3C744D282F2D145700D4D047 /* Sources */,
+				3C744D292F2D145700D4D047 /* Frameworks */,
+				3C744D2A2F2D145700D4D047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3C744D2E2F2D145700D4D047 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3C744D2F2F2D145700D4D047 /* Media File Date FixerUITests */,
+			);
+			name = "Media File Date FixerUITests";
+			packageProductDependencies = (
+			);
+			productName = "Media File Date FixerUITests";
+			productReference = 3C744D2C2F2D145700D4D047 /* Media File Date FixerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -208,7 +335,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					3C0714562E2BCD87004B99E1 = {
@@ -221,6 +348,17 @@
 					3C07146E2E2BCD87004B99E1 = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = 3C0714562E2BCD87004B99E1;
+					};
+					3C744D152F2D145600D4D047 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					3C744D212F2D145700D4D047 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 3C744D152F2D145600D4D047;
+					};
+					3C744D2B2F2D145700D4D047 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 3C744D152F2D145600D4D047;
 					};
 				};
 			};
@@ -241,6 +379,9 @@
 				3C0714562E2BCD87004B99E1 /* mfdf */,
 				3C0714642E2BCD87004B99E1 /* mfdfTests */,
 				3C07146E2E2BCD87004B99E1 /* mfdfUITests */,
+				3C744D152F2D145600D4D047 /* Media File Date Fixer */,
+				3C744D212F2D145700D4D047 /* Media File Date FixerTests */,
+				3C744D2B2F2D145700D4D047 /* Media File Date FixerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -261,6 +402,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3C07146D2E2BCD87004B99E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D142F2D145600D4D047 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D202F2D145700D4D047 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D2A2F2D145700D4D047 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -291,6 +453,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3C744D122F2D145600D4D047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D1E2F2D145700D4D047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C744D282F2D145700D4D047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -303,6 +486,16 @@
 			isa = PBXTargetDependency;
 			target = 3C0714562E2BCD87004B99E1 /* mfdf */;
 			targetProxy = 3C0714702E2BCD87004B99E1 /* PBXContainerItemProxy */;
+		};
+		3C744D242F2D145700D4D047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3C744D152F2D145600D4D047 /* Media File Date Fixer */;
+			targetProxy = 3C744D232F2D145700D4D047 /* PBXContainerItemProxy */;
+		};
+		3C744D2E2F2D145700D4D047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3C744D152F2D145600D4D047 /* Media File Date Fixer */;
+			targetProxy = 3C744D2D2F2D145700D4D047 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -342,6 +535,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -403,6 +597,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -429,8 +624,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = mfdf/mfdf.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -475,8 +672,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = mfdf/mfdf.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -599,6 +798,162 @@
 			};
 			name = Release;
 		};
+		3C744D352F2D145700D4D047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-Fixer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3C744D362F2D145700D4D047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-Fixer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3C744D382F2D145700D4D047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-FixerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Media File Date Fixer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Media File Date Fixer";
+			};
+			name = Debug;
+		};
+		3C744D392F2D145700D4D047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-FixerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Media File Date Fixer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Media File Date Fixer";
+			};
+			name = Release;
+		};
+		3C744D3B2F2D145700D4D047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-FixerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Media File Date Fixer";
+			};
+			name = Debug;
+		};
+		3C744D3C2F2D145700D4D047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G59BCCB727;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "osola.org.uk.Media-File-Date-FixerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Media File Date Fixer";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -634,6 +989,33 @@
 			buildConfigurations = (
 				3C0714802E2BCD87004B99E1 /* Debug */,
 				3C0714812E2BCD87004B99E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3C744D342F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date Fixer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C744D352F2D145700D4D047 /* Debug */,
+				3C744D362F2D145700D4D047 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3C744D372F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date FixerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C744D382F2D145700D4D047 /* Debug */,
+				3C744D392F2D145700D4D047 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3C744D3A2F2D145700D4D047 /* Build configuration list for PBXNativeTarget "Media File Date FixerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C744D3B2F2D145700D4D047 /* Debug */,
+				3C744D3C2F2D145700D4D047 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

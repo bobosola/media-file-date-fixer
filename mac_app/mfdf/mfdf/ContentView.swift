@@ -41,11 +41,9 @@ struct ContentView: View {
                 
                 if !introHidden {
                     let introText = """
-                        mfdf can recover the *Created* date for:  
-                        • most image files
-                        • most video files
-                        It works best on media files copied directly from a camera.
-                        More details at the [app website](https://mfdf.osola.org.uk)
+                        *mfdf* can recover the *Created* date for most image
+                        and files video files. It works best on media files 
+                        copied directly from a camera.
                         """
                     
                     let attributed = try! AttributedString(
