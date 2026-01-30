@@ -34,7 +34,7 @@ namespace mfdf
             hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            appWindow.Resize(new SizeInt32(1920, 1080));
+            appWindow.Resize(new SizeInt32(800, 600));
         }
 
         private static string MakeReport(string path)
@@ -86,7 +86,7 @@ namespace mfdf
                 }
                 else
                 {
-                    ResultText.Text = result;
+                    ResultText.Text = result.Replace("\\\\", "\\"); 
                 }
                     
                 ResultText.Visibility = Visibility.Visible;

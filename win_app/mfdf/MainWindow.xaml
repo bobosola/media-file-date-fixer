@@ -34,15 +34,11 @@
             <!--Margin is left, top, right, bottom -->
             <RichTextBlock x:Name="IntroText" Margin="20" FontSize="16">
                 <Paragraph>
-                    mfdf can recover the <Italic>Created</Italic> date for:<LineBreak /> 
-                    • most image files
-                    <LineBreak />
-                    • most video files
+                    <Bold>mfdf</Bold> can recover the
+                    <Italic>Created</Italic> date for most image &amp; video files.
                     <LineBreak />
                     <LineBreak />
-                    It works best for media files copied directly from a camera.
-                    <LineBreak />
-                    More details on the <Hyperlink NavigateUri="https://mfdf.osola.org.uk">app website</Hyperlink> .     
+                    It works best for media files copied directly from a camera.     
                 </Paragraph>
             </RichTextBlock>
 
