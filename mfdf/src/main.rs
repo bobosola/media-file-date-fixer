@@ -38,9 +38,7 @@ fn print_help() {
     println!(
         r#"
 ---------------- Media File Date Fixer (mfdf) ----------------
-This app can recover:
-• lost 'Created' & 'Modified' dates for copied image files
-• lost 'Created' dates for copied video files
+This app can recover 'Created' dates for copied image and video files.
 It works with most common photo and video formats.
 
 It requires a directory path as its single argument and will

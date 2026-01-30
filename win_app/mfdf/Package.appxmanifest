@@ -32,7 +32,7 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="Media File Date Fixer (mfdf)"
-        Description="Recovers the Created and  Modified dates for common media file types which can become lost during copying"
+        Description="Recovers the Created date for common media file types which can become lost during copying"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

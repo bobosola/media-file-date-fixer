@@ -29,13 +29,11 @@ impl Default for Report {
 // Holds any datetimes retrieved from metadata
 struct DateTimes {
     created_date: Option<DateTime<FixedOffset>>,
-    modified_date: Option<DateTime<FixedOffset>>
 }
 impl Default for DateTimes {
     fn default() -> Self {
         return DateTimes {
             created_date: None,
-            modified_date: None
         }
     }
 }
@@ -70,9 +68,9 @@ impl From<nom_exif::Error> for DateFixError {
     }
 }
 
-/// Attempts to fix lost Created & Modified dates in common media files
+/// Attempts to fix lost Created dates in common media files
 /// by recovering the dates from file metadata (Exif etc.). It then updates
-/// the files' Inode/WinMFT 'Created' and/or 'Modifed' dates accordingly.
+/// the files' Inode/WinMFT 'Created' (and/or 'Modifed' dates) accordingly.
 /// It requires a directory path as the single argument.
 pub fn fix_dates(dir_path: &Path) -> Report {
 

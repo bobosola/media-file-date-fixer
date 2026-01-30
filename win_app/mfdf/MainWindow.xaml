@@ -34,10 +34,10 @@
             <!--Margin is left, top, right, bottom -->
             <RichTextBlock x:Name="IntroText" Margin="20" FontSize="16">
                 <Paragraph>
-                    mfdf can recover: <LineBreak /> 
-                    • the <Italic>Created</Italic> and <Italic>Modified</Italic> dates for most image files
+                    mfdf can recover the <Italic>Created</Italic> date for:<LineBreak /> 
+                    • most image files
                     <LineBreak />
-                    • the <Italic>Created</Italic> date for most video files
+                    • most video files
                     <LineBreak />
                     <LineBreak />
                     It works best for media files copied directly from a camera.
