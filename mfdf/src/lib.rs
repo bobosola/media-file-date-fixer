@@ -138,12 +138,12 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
     }
     else {
         // No metadata of any sort could be found
-        return Err(DateFixError::MissingMetadata);
+        return Err(DateFixError::MissingMetadata)
     }
 
     // Got metadata of some sort, but no created dates in it
     if datetimes.created_date.is_none() {
-        return Err(DateFixError::MissingDates);
+        return Err(DateFixError::MissingDates)
     }
 
     // Use the found created date to amemd the file's OS dates
@@ -201,12 +201,11 @@ fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
 /// but they might also be 'naive' date format e.g. '2026-01-16 15:29:19'
 /// as seen in iPhone HEIC images converted to JPG in the iPhone Files app.
 /// So we need to try to convert any 'naive' dates found to standard format
-fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
-    if let Some(tag) = exif.get(tag) {
-        if let Some(dt) = tag.as_time() {   
-            return Some(dt);
-        } else {
-            return get_dt_from_naive_dt(&tag);
+fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {   
+    if let Some(entryval) = exif.get(tag) {
+        match entryval.as_time() {
+            Some(entryval) => return Some(entryval),
+            None => return naive_to_fixed_offset(&entryval)
         }
     }
     None
@@ -214,20 +213,19 @@ fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {
 
 /// Try to convert a video metadata datetime tag to a DateTime
 fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
-    if let Some(tag) = info.get(tag) {
-        if let Some(dt) = tag.as_time() {
-            return Some(dt);
-        }
+    match info.get(tag) {
+        Some(entryval) => entryval.as_time(),
+        None => None
     }
-    None
 }
 
-/// Trys to convert 'naive' datetimes to standard datetimes with offset
-fn get_dt_from_naive_dt(entry: &EntryValue) -> Option<DateTime<FixedOffset>> {
+
+/// Try to convert 'naive' datetimes to standard datetimes with offset
+fn naive_to_fixed_offset(entry: &EntryValue) -> Option<DateTime<FixedOffset>> {
     if let Some(naive) = NaiveDateTime::parse_from_str(&entry.to_string(),"%Y-%m-%d %H:%M:%S").ok(){
         let offset = FixedOffset::east_opt(0).unwrap(); // zero is safe to unwrap
         if let Some(dt) = offset.from_local_datetime(&naive).single(){
-            return Some(dt);
+            return Some(dt)
         }      
     } 
    None 
