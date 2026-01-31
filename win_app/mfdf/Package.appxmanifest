@@ -4,16 +4,18 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
+  IgnorableNamespaces="uap rescap mp uap18">
 
   <Identity
-    Name="a2847af4-ef13-4f10-a8f6-1764b227d79a"
-    Publisher="CN=Bob"
-    Version="1.0.0.0" />
+    Name="osola.org.uk.MediaFileDateFixer"
+    Publisher="CN=FE1DDAA7-A33A-41BC-90E3-791490EAD129"
+    Version="1.0.2.0" />
 
   <Properties>
-    <DisplayName>mfdf</DisplayName>
-    <PublisherDisplayName>Bob</PublisherDisplayName>
+    <DisplayName>Media File Date Fixer</DisplayName>
+    <PublisherDisplayName>osola.org.uk</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -29,7 +31,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
+      EntryPoint="$targetentrypoint$" uap18:TrustLevel="appContainer" uap18:RuntimeBehavior="windowsApp">
       <uap:VisualElements
         DisplayName="Media File Date Fixer (mfdf)"
         Description="Recovers the Created date for common media file types which can become lost during copying"
@@ -45,4 +47,5 @@
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
+
 </Package>
