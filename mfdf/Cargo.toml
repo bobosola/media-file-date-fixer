@@ -7,7 +7,8 @@ edition.workspace = true
 
 [dependencies]
 walkdir = "2.5.0"
-nom-exif = "2.6.1"
+nom-exif = "2.7.0"
 chrono = "0.4.43"
 pathdiff = "0.2.3"
 cfg-if = "1.0.0"
+clap = { version = "4.5", features = ["derive"] }

@@ -1,27 +1,29 @@
-use std::fs:: {File, FileTimes };
+use std::fs::{File, FileTimes};
 use std::fmt;
-use std::time:: SystemTime;
-use std::path::{ Path };
+use std::time::SystemTime;
+use std::path::Path;
 use std::error::Error;
-use walkdir::{ WalkDir, DirEntry };
+use walkdir::{WalkDir, DirEntry};
 use nom_exif::*;
-use pathdiff:: diff_paths;
-use chrono:: {DateTime, FixedOffset, NaiveDateTime, TimeZone};
+use pathdiff::diff_paths;
+use chrono::{DateTime, FixedOffset, Local};
 
 /// Summary report of application run
 pub struct Report {
     pub examined: i32,
     pub updated: i32,
     pub failed: i32,
-    pub err_msgs: Vec<String>
+    pub err_msgs: Vec<String>,
+    pub time_taken: String
 }
 impl Default for Report {
     fn default() -> Self {
-        return Report {
+        Report {
             examined: 0,
             updated: 0,
             failed: 0,
-            err_msgs: vec![]
+            err_msgs: vec![],
+            time_taken: "0".to_string()
         }
     }
 }
@@ -32,9 +34,7 @@ struct DateTimes {
 }
 impl Default for DateTimes {
     fn default() -> Self {
-        return DateTimes {
-            created_date: None,
-        }
+        DateTimes { created_date: None }
     }
 }
 
@@ -70,12 +70,14 @@ impl From<nom_exif::Error> for DateFixError {
 
 /// Attempts to fix lost Created dates in common media files
 /// by recovering the dates from file metadata (Exif etc.). It then updates
-/// the files' Inode/WinMFT 'Created' (and/or 'Modifed' dates) accordingly.
+/// the files' Inode/WinMFT 'Created' dates (on Mac and Windows) 
+/// or the files' 'Modified' dates (on Linux & other Unix-like) accordingly.
 /// It requires a directory path as the single argument.
 pub fn fix_dates(dir_path: &Path) -> Report {
 
     let mut report = Report::default();
     let parser = &mut MediaParser::new();
+    let start = std::time::Instant::now();
 
     // Recursively search the directory, filter out any Unix hidden files
     for entry in WalkDir::new(dir_path).into_iter().filter_entry(|e| !is_hidden(e)) {
@@ -113,12 +115,25 @@ pub fn fix_dates(dir_path: &Path) -> Report {
              }
          }
      }
+     report.time_taken = format!("Completed in {:.2}s", start.elapsed().as_secs_f64());
      report
  }
+ 
+ 
+/// Extracts a datetime from media metadata (EXIF or video track info).
+/// 
+/// Takes a metadata source and a tag, retrieves the raw entry value,
+/// then converts it to a timezone-aware datetime using get_wall_clock_date_time.
+/// Returns None if the tag is missing or the date cannot be parsed.
+macro_rules! get_date {
+    ($source:expr, $tag:expr) => {
+        $source.get($tag).and_then(get_wall_clock_date_time)
+    };
+}
 
 /// Parses a file to determine if it contains suitable image or video metadata
 /// then uses the found metadata to update the OS file dates(s)
-fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Result<(), DateFixError> {
+fn update_file(file_path: &Path, parser: &mut MediaParser) -> std::result::Result<(), DateFixError> {
 
     let mut datetimes = DateTimes::default();
     let ms = MediaSource::file_path(file_path)?;
@@ -127,14 +142,14 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
         // .heic, .heif, jpg/jpeg, *.tiff/tif, *.RAF (Fujifilm RAW)
         let iter: ExifIter = parser.parse(ms)?;
         let exif: Exif = iter.into();
-        datetimes.created_date = get_image_date(ExifTag::CreateDate, &exif);
+        datetimes.created_date = get_date!(&exif, ExifTag::CreateDate);
     }
     else if ms.has_track() {
         // Similar process for video files
         // ISO base media file format (ISOBMFF): *.mp4, *.mov, *.3gp
         // or Matroska-based file format: .webm, *.mkv, *.mka
         let info: TrackInfo = parser.parse(ms)?;
-        datetimes.created_date = get_video_date(TrackInfoTag::CreateDate, &info);
+        datetimes.created_date = get_date!(&info, TrackInfoTag::CreateDate);
     }
     else {
         // No metadata of any sort could be found
@@ -146,34 +161,29 @@ fn update_file(file_path: &Path, parser: &mut MediaParser) ->  std::result::Resu
         return Err(DateFixError::MissingDates)
     }
 
-    // Use the found created date to amemd the file's OS dates
+    // Use the found created date to amend the file's OS dates
     let file_to_amend = File::options().write(true).open(file_path)?;
 
     // Changing Created dates requires OS-specific code for Mac & Windows, and cannot be changed at
-    // all on Unix-like systems
-    cfg_if::cfg_if! {
-        if #[cfg(target_os="macos")] {
-            use std::os::macos::fs::FileTimesExt;
-            if let Some(created) = datetimes.created_date {
+    // all on Unix-like systems, so edit the Modified date in such cases
+    if let Some(created) = datetimes.created_date {
+        cfg_if::cfg_if! {
+            if #[cfg(target_os="macos")] {
+                use std::os::macos::fs::FileTimesExt;
                 file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
             }
-        }
-     else if #[cfg(target_os="windows")] {
-            use std::os::windows::fs::FileTimesExt;
-            if let Some(created) = datetimes.created_date {
+            else if #[cfg(target_os="windows")] {
+                use std::os::windows::fs::FileTimesExt;
                 file_to_amend.set_times(FileTimes::new().set_created(SystemTime::from(created)))?;
             }
-        }
-        else {
-            // Other systems don't have editable 'Created' dates. So, we will insert the 
-            // metadata 'Created' date into the 'Modified' date just for these systems. 
-            // Not ideal, but better than having no original camera dates at all
-            if datetimes.created_date.is_some() {
-                datetimes.modified_date = datetimes.created_date;
+            else {
+                // Other systems don't have editable 'Created' dates. So, we will insert the 
+                // metadata 'Created' date into the 'Modified' date just for these systems. 
+                // Not ideal, but better than having no original camera dates at all
+                file_to_amend.set_times(FileTimes::new().set_modified(SystemTime::from(created)))?;
             }
-        }
+        } 
     }
-    
     Ok(())
 }
 
@@ -189,44 +199,24 @@ fn is_hidden(entry: &DirEntry) -> bool {
 /// Try to get the file path relative to the top level directory.
 /// Defaults to the full file path on failure.
 fn get_relative_path(dir_path: &Path, entry: &DirEntry) -> String {
-    let full_file_path = entry.path().to_path_buf();
+    let full_file_path = entry.path();
     match diff_paths(&full_file_path, dir_path) {
         Some(short_path) => short_path.display().to_string(),
         None => full_file_path.display().to_string()
     }
 }
 
-
-/// Exif datetimes should be in standard format with offset, e.g. '2026-01-16T15:29:19+00:00'
-/// but they might also be 'naive' date format e.g. '2026-01-16 15:29:19'
-/// as seen in iPhone HEIC images converted to JPG in the iPhone Files app.
-/// So we need to try to convert any 'naive' dates found to standard format
-fn get_image_date(tag: ExifTag, exif: &Exif) -> Option<DateTime<FixedOffset>> {   
-    if let Some(entryval) = exif.get(tag) {
-        match entryval.as_time() {
-            Some(entryval) => return Some(entryval),
-            None => return naive_to_fixed_offset(&entryval)
-        }
+/// Get a local 'wall clock' DateTime from the media metadata
+/// and convert it to a system DateTime showing the same local time
+/// i.e. it ignores any time zone information so that a media file
+/// created at 15:00 in New York still appears as 15:00 when inserted
+/// into a file copy made in any other location or time zone
+fn get_wall_clock_date_time(entryval: &EntryValue) -> Option<DateTime<FixedOffset>> {   
+    if let Some(naive_with_maybe_offset) = entryval.as_time_components() {
+        let (naive, _) = naive_with_maybe_offset;
+        if let Some(local_datetime) = naive.and_local_timezone(Local).latest() {
+            return Some(local_datetime.into())
+        }  
     }
     None
-}
-
-/// Try to convert a video metadata datetime tag to a DateTime
-fn get_video_date(tag: TrackInfoTag, info: &TrackInfo ) -> Option<DateTime<FixedOffset>> {
-    match info.get(tag) {
-        Some(entryval) => entryval.as_time(),
-        None => None
-    }
-}
-
-
-/// Try to convert 'naive' datetimes to standard datetimes with offset
-fn naive_to_fixed_offset(entry: &EntryValue) -> Option<DateTime<FixedOffset>> {
-    if let Some(naive) = NaiveDateTime::parse_from_str(&entry.to_string(),"%Y-%m-%d %H:%M:%S").ok(){
-        let offset = FixedOffset::east_opt(0).unwrap(); // zero is safe to unwrap
-        if let Some(dt) = offset.from_local_datetime(&naive).single(){
-            return Some(dt)
-        }      
-    } 
-   None 
 }

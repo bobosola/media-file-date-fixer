@@ -27,8 +27,9 @@ pub extern "C" fn make_report(raw_path: *const c_char) -> *mut c_char {
         "mfdf report for files in {:?}\n\
          examined: {}\n\
          updated: {}\n\
-         failed: {}\n",
-        path, report.examined, report.updated, report.failed
+         failed: {}\n
+         {}",
+        path, report.examined, report.updated, report.failed, report.time_taken
     );
 
     let mut full_report = report_string;
