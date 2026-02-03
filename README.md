@@ -16,7 +16,7 @@ To build the command line app, you will need to have [Rust](https://www.rust-lan
 The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument.
 
 ## Quick Warning
-**mfdf** is very unlikely to work on media files downloaded from social media sites as these typically have their metadata stripped for privacy reasons. Also, some editing applications have been known to strip metadata. So please ensure that you are working on copies of your original media files as a safety measure as there is no Undo feature. 
+**mfdf** is designed to work with media files directly copied from cameras or phones. Please ensure that you are working on copies of your original media files as a safety measure as there is no Undo feature. **mfdf** is very unlikely to work with media files downloaded from social media sites as these typically have their metadata stripped for privacy reasons. Also, some editing applications have been known to strip metadata. 
 
 ## Example Usage
 
@@ -31,8 +31,8 @@ The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe
 The three app types are functionally equivalent. They all recursively scan the chosen directory and attempt to retrieve `Created` date metadata from each supported file type, then:
 
  - On Macs and Windows, the app uses the found date to update the file's OS `Created` date. 
- - On other Unix-like systems (Linux etc.), the found date is used to update the file's OS `Modified` date as a better-than-nothing solution because the `Created` date on such systems is strictly read-only. 
+ - On other Unix-like systems (Linux etc.), the found date is used to update the file's OS `Modified` date as a better-than-nothing solution, because the `Created` date on such systems is strictly read-only. 
 
-**Note:** After running **mfdf**, the updated OS date and time in a copied file will show the same time of day that the media file was created. In other words, wall clock time is maintained rather than UTC time. For example, a shot taken in Bermuda at 16:00 with the camera set to local time will still show as 16:00 on a copied file made in London. Metadata time zone offsets are deliberately ignored if supplied, otherwise the London file copy would show as having been created at 20:00, which is arguably correct but not helpful for viewing files in shot date order if mixed with other media files from the same location which have no time zone offset supplied (which is very common).
+**Note:** After running **mfdf**, the updated OS date and time in a copied file will show the same time of day that the media file was created. In other words, wall clock time is maintained rather than UTC time. For example, a shot taken in Bermuda at 16:00 with the camera set to local time will still show as 16:00 on a copied file made in London. Metadata time zone offsets are deliberately ignored if supplied, otherwise the London file copy would show as having been created at 20:00, which is arguably a more correct approach. But that would not be helpful for viewing files in shot date order when mixed with files shot in the same location on other devices which do not included the time zone offset in their metadata (which is very common).
 
 On completion, the code returns a summary report containing a count of the number of files examined, a count of the number of files updated, and a count of failed files with error details of any failed files.
