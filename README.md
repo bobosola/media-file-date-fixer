@@ -13,7 +13,7 @@ To build the command line app, you will need to have [Rust](https://www.rust-lan
 2. `cd media-file-date-fixer`
 3. `cargo build --release`
 
-The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument, e.g. `./mfdf /Users/bob/myvideos`
+The CLI app should then be available in `target/release` as `mfdf` (or `mfdf.exe` on Windows). It takes a directory path as its single argument.
 
 ## Quick Warning
 **mfdf** is very unlikely to work on media files downloaded from social media sites as these typically have their metadata stripped for privacy reasons. Also, some editing applications have been known to strip metadata. So please ensure that you are working on copies of your original media files as a safety measure as there is no Undo feature. 
