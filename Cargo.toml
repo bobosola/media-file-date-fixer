@@ -9,5 +9,5 @@ edition = "2024"
 authors = ["Bob Osola <bobosola@gmail.com>"]
 description = "Retrieves media files Created dates lost during copying"
 
-[patch.crates-io]
-nom-exif = { path = "../nom-exif" }
+#[patch.crates-io]
+#nom-exif = { path = "../nom-exif" }

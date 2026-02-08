@@ -1,60 +1,43 @@
-use std::{ env, process::exit, path::Path };
+use std::path::PathBuf;
+use clap::Parser;
 use mfdf::fix_dates;
 
-// Simple runner for the media_file_date_fixer library
+/// Media File Date Fixer - recover 'Created' dates for copied media files
+#[derive(Parser)]
+#[command(name = "mfdf")]
+#[command(about = "Recover 'Created' dates for copied image and video files")]
+#[command(version)]
+struct Args {
+    /// Directory path to process (will traverse subdirectories)
+    path: PathBuf,
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    match args.len() {
-        1 => {
-            print_help();
-            exit(0);
-        }
-        2 => {
-            if ["help", "--help", "-h", "-?", "/?"].contains(&args[1].as_str()) {
-                print_help();
-                exit(0);
-            }
-        }
-        _ => {
-            eprintln!("Error: Too many arguments provided");
-            print_help();
-            exit(1);
-        }
+    let args = Args::parse();
+    let dir_path = &args.path;
+
+    if !dir_path.exists() {
+        eprintln!("Error: '{}' does not exist", dir_path.display());
+        std::process::exit(1);
     }
 
-    let dir_path = Path::new(&args[1]);
-    if dir_path.exists() && dir_path.is_dir(){
-        println!("Processing files in: {}", dir_path.display());
-        let report = fix_dates(dir_path);
-        print_report(&report, dir_path);
+    if !dir_path.is_dir() {
+        eprintln!("Error: '{}' is not a directory", dir_path.display());
+        std::process::exit(1);
     }
-    else {
-        eprintln!("Error: '{}' is not a directory or cannot be accessed", dir_path.display());
-        exit(1);
-    }
+
+    println!("Processing files in: {}", dir_path.display());
+    let report = fix_dates(dir_path);
+    print_report(&report, dir_path);
 }
 
-fn print_help() {
-    println!(
-        r#"
----------------- Media File Date Fixer (mfdf) ----------------
-This app can recover 'Created' dates for copied image and video files.
-It works with most common photo and video formats.
-
-It requires a directory path as its single argument and will
-traverse all sub-directories. Example usage:
-• ./mfdf ~/Desktop/copiedfiles
-• ./mfdf '/Users/bob/Desktop/copied files'
-        "#
-    );
-}
-
-fn print_report(report: &mfdf::Report, dir_path: &Path) {
+fn print_report(report: &mfdf::Report, dir_path: &PathBuf) {
     println!();
     println!("mfdf report for files in: {}", dir_path.display());
-    println!("  examined: {}", report.examined);
-    println!("  updated:  {}", report.updated);
-    println!("  failed:   {}", report.failed);
+    println!("  examined:   {}", report.examined);
+    println!("  updated:    {}", report.updated);
+    println!("  failed:     {}", report.failed);
+    
 
     if !report.err_msgs.is_empty() {
         println!("\nfailure details:");
@@ -62,4 +45,5 @@ fn print_report(report: &mfdf::Report, dir_path: &Path) {
             println!("  {}. {}", i + 1, error_msg);
         }
     }
+    println!("{}", report.time_taken);
 }
