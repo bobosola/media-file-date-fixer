@@ -37,8 +37,10 @@
                     <Bold>mfdf</Bold> can recover the
                     <Italic>Created</Italic> date for most image &amp; video files.
                     <LineBreak />
+                    It works best with media files copied directly from a camera.
                     <LineBreak />
-                    It works best for media files copied directly from a camera.     
+                    <LineBreak />
+                    Pick a directory and <Bold>mfdf</Bold> will go to work...
                 </Paragraph>
             </RichTextBlock>
 
