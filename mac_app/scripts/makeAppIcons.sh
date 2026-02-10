@@ -67,3 +67,4 @@ ls -la "$DEST"/AppIcon-*.png
 
 echo ""
 echo "✅ Done! Restart Xcode to see the icons."
+clear
