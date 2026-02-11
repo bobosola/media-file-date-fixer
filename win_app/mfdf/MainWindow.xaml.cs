@@ -86,7 +86,9 @@ namespace mfdf
                 }
                 else
                 {
-                    ResultText.Text = result.Replace("\\\\", "\\"); 
+                    string resultMsg = result.Replace("\\\\", "\\");
+                    resultMsg = resultMsg + "\n\n You may need to refresh your File Explorer window to see the changes";
+                    ResultText.Text = resultMsg;
                 }
                     
                 ResultText.Visibility = Visibility.Visible;
